@@ -56,10 +56,12 @@ public class ConfigHandlerProvider extends URLHandlerBase implements
 
 	@Activate
 	protected void activate() {
+		log.debug("### actvate");
 	}
 
 	@Deactivate
 	protected void deactivate() {
+		log.debug("### deactvate");
 	}
 
 }

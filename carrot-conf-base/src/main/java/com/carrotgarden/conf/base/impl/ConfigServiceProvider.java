@@ -16,7 +16,7 @@ import com.carrotgarden.conf.base.api.IdentityService;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
-@Component
+@Component(immediate = true)
 public class ConfigServiceProvider implements ConfigService {
 
 	private static final Logger log = LoggerFactory
@@ -128,6 +128,8 @@ public class ConfigServiceProvider implements ConfigService {
 	@Activate
 	protected void activate() {
 
+		log.debug("### actvate");
+
 		final Config boot = ConfigFactory.load(ConfigConst.Repo.BOOT_FILE);
 		final Config conf = boot.getConfig(ConfigConst.Key.REPOSITORY);
 
@@ -143,6 +145,8 @@ public class ConfigServiceProvider implements ConfigService {
 	protected void deactivate() {
 
 		repo = null;
+
+		log.debug("### deactvate");
 
 	}
 
