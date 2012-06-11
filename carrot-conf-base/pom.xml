@@ -31,7 +31,7 @@
 
 	<properties>
 
-		<carrotJavaVersion>1.7</carrotJavaVersion>
+		<carrotJavaVersion>1.6</carrotJavaVersion>
 
 		<carrotFelixVersion>4.0.2</carrotFelixVersion>
 		<carrotPaxExamVersion>2.4.0</carrotPaxExamVersion>

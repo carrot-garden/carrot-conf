@@ -14,7 +14,7 @@ import com.carrotgarden.conf.base.api.IdentitySource;
 
 public class TestIdentityFromSystemProperty {
 
-	private final static Logger log = LoggerFactory
+	final static Logger log = LoggerFactory
 			.getLogger(TestIdentityFromSystemProperty.class);
 
 	protected void setUp() throws Exception {

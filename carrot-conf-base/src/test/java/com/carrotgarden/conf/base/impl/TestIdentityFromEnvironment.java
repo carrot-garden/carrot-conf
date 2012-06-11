@@ -8,15 +8,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
 
+import util.JDK;
+
 import com.carrotgarden.conf.base.api.ConfigConst;
 import com.carrotgarden.conf.base.api.Identity;
 import com.carrotgarden.conf.base.api.IdentitySource;
 
-import util.JDK;
-
 public class TestIdentityFromEnvironment {
 
-	private final static Logger log = LoggerFactory
+	final static Logger log = LoggerFactory
 			.getLogger(TestIdentityFromEnvironment.class);
 
 	protected void setUp() throws Exception {

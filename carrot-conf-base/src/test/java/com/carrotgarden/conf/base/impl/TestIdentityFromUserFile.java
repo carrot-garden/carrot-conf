@@ -12,11 +12,10 @@ import org.testng.annotations.Test;
 import com.carrotgarden.conf.base.api.ConfigConst;
 import com.carrotgarden.conf.base.api.Identity;
 import com.carrotgarden.conf.base.api.IdentitySource;
-import com.carrotgarden.conf.base.impl.Util;
 
 public class TestIdentityFromUserFile {
 
-	private final static Logger log = LoggerFactory
+	final static Logger log = LoggerFactory
 			.getLogger(TestIdentityFromUserFile.class);
 
 	protected void setUp() throws Exception {
