@@ -92,9 +92,9 @@ public class TestInOSGI {
 
 		log.info("### confURL : " + confURL);
 
-		final Config conf = configService.getInstanceConfig();
-
 		assertTrue(configService.isConfigAvailable());
+
+		final Config conf = configService.getInstanceConfig();
 
 		assertEquals(conf.getString("main.name"), "app name");
 		assertEquals(conf.getInt("main.size"), 123);
