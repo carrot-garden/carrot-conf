@@ -19,17 +19,17 @@ import com.carrotgarden.conf.base.api.ConfigConst;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
-public class TestRepoVersionChange {
+public class TestRepoChangeVersion {
 
 	private static final Logger log = LoggerFactory
-			.getLogger(TestRepoVersionChange.class);
+			.getLogger(TestRepoChangeVersion.class);
 
 	private RepoService repo;
 
 	@BeforeTest
 	public void testBegin() {
 
-		final String local = "./target/config-version-change-"
+		final String local = "./target/config-change-version-"
 				+ UUID.randomUUID();
 
 		final Properties properties = new Properties();
@@ -39,8 +39,8 @@ public class TestRepoVersionChange {
 
 		//
 
-		final Config root = ConfigFactory.load(ConfigConst.Repo.BOOT_FILE);
-		final Config tree = root.getConfig(ConfigConst.Key.REPOSITORY);
+		final Config boot = ConfigFactory.load(ConfigConst.Repo.BOOT_FILE);
+		final Config tree = boot.getConfig(ConfigConst.Key.REPOSITORY);
 		final Config conf = prop.withFallback(tree);
 
 		repo = new RepoServiceImpl(conf);

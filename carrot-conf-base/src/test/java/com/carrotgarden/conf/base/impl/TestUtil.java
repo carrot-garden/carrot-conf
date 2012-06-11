@@ -78,9 +78,8 @@ public class TestUtil {
 	@Test
 	public void testOverride() {
 
-		final Config root = ConfigFactory.load(ConfigConst.Repo.BOOT_FILE);
-
-		final Config tree = root.getConfig(ConfigConst.Key.REPOSITORY);
+		final Config boot = ConfigFactory.load(ConfigConst.Repo.BOOT_FILE);
+		final Config tree = boot.getConfig(ConfigConst.Key.REPOSITORY);
 
 		final Properties properties = new Properties();
 		properties.put("local", "override");

@@ -17,17 +17,17 @@ import com.carrotgarden.conf.base.api.ConfigConst;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
-public class TestRepoServiceImpl {
+public class TestRepoChangeMaster {
 
 	private static final Logger log = LoggerFactory
-			.getLogger(TestRepoServiceImpl.class);
+			.getLogger(TestRepoChangeMaster.class);
 
 	private RepoService repo;
 
 	@BeforeTest
 	public void testBegin() {
 
-		final String local = "./target/config-repo-service-"
+		final String local = "./target/config-change-master-"
 				+ UUID.randomUUID();
 
 		final Properties properties = new Properties();
@@ -45,7 +45,12 @@ public class TestRepoServiceImpl {
 
 		assertTrue(repo.deleteRepoAll());
 
+		assertTrue(repo.ensureRepoAll());
+		assertTrue(repo.updateRepoArchon());
+
 	}
+
+	static final String PATH = "instance/com/company/karaf/application.conf";
 
 	@AfterTest
 	public void testEnd() {
@@ -56,59 +61,25 @@ public class TestRepoServiceImpl {
 
 	private void testRepoMaster(final String version) {
 
-		assertTrue(repo.ensureRepoAll());
-
-		assertTrue(repo.updateRepoArchon());
 		assertTrue(repo.updateRepoMaster(version));
 
-		//
-
-		final File appFile = new File(repo.getLocalMaster(),
-				"/instance/com/company/karaf/application.conf");
+		final File appFile = new File(repo.getLocalMaster(), PATH);
 		assertFile(appFile);
 
 		final Config appConfig = ConfigFactory.parseFile(appFile);
-		log.info("application : \n{}", appConfig);
-		assertEquals(appConfig.getString("main.name"), "app name");
-		assertEquals(appConfig.getInt("main.size"), 123);
+		log.info("appConfig : \n{}", appConfig);
 		assertEquals(appConfig.getString("main.version"), version);
 
 	}
 
 	@Test
-	public void testRepoVersion() {
-
-		assertTrue(repo.ensureRepoAll());
-
-		assertTrue(repo.updateRepoArchon());
-		assertTrue(repo.updateRepoVersion());
-
-		final File versionFile = new File(repo.getLocalVersion(),
-				"/instance/com/company/karaf/version.conf");
-		assertFile(versionFile);
-
-		final Config versionConfig = ConfigFactory.parseFile(versionFile);
-		log.info("version : \n{}", versionConfig);
-		assertEquals(versionConfig.getString(ConfigConst.Key.VERSION), "1.0.1");
-
-	}
-
-	// first pass - clone & fetch
-	@Test
-	public void testRepo1() {
-		testRepoMaster("1.0.1");
-	}
-
-	// second pass - fetch only
-	@Test
-	public void testRepo2() {
-		testRepoMaster("1.0.1");
-	}
-
-	// second pass - fetch new version
-	@Test
-	public void testRepo3() {
+	public void testRepoMaster1() {
 		testRepoMaster("1.0.2");
+	}
+
+	@Test
+	public void testRepoMaster2() {
+		testRepoMaster("1.0.3");
 	}
 
 }

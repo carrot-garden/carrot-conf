@@ -128,8 +128,8 @@ public class ConfigServiceProvider implements ConfigService {
 	@Activate
 	protected void activate() {
 
-		final Config root = ConfigFactory.load(ConfigConst.Repo.BOOT_FILE);
-		final Config conf = root.getConfig(ConfigConst.Key.REPOSITORY);
+		final Config boot = ConfigFactory.load(ConfigConst.Repo.BOOT_FILE);
+		final Config conf = boot.getConfig(ConfigConst.Key.REPOSITORY);
 
 		repo = new RepoServiceImpl(conf);
 
