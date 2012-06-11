@@ -200,7 +200,7 @@
 					</execution>
 					<execution>
 						<id>generate</id>
-						<phase>prepare-package</phase>
+						<phase>process-classes</phase>
 						<goals>
 							<goal>generate</goal>
 						</goals>
@@ -217,6 +217,15 @@
 						<Service-Component>OSGI-INF/service-component/*.xml</Service-Component>
 					</instructions>
 				</configuration>
+				<executions>
+					<execution>
+						<id>generate</id>
+						<phase>process-classes</phase>
+						<goals>
+							<goal>manifest</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 
 		</plugins>
