@@ -1,0 +1,149 @@
+package com.carrotgarden.conf.base.impl;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.URL;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.carrotgarden.conf.base.api.ConfigConst;
+
+public class Util {
+
+	private static final Logger log = LoggerFactory.getLogger(Util.class);
+
+	public static String loadUrlAsString(final String urlPath) throws Exception {
+
+		final URL url = new URL(urlPath);
+
+		final BufferedReader reader = new BufferedReader(new InputStreamReader(
+				url.openConnection().getInputStream()));
+
+		final StringBuilder text = new StringBuilder(1024);
+
+		while (true) {
+
+			final String line = reader.readLine();
+
+			if (line == null) {
+				break;
+			}
+
+			text.append(line);
+
+		}
+
+		reader.close();
+
+		return text.toString();
+
+	}
+
+	public static String loadFileAsString(final String file) throws Exception {
+
+		final FileInputStream stream = new FileInputStream(new File(file));
+
+		final InputStreamReader reader = new InputStreamReader(stream, "UTF-8");
+
+		final BufferedReader buffered = new BufferedReader(reader);
+
+		final StringBuilder text = new StringBuilder(1024);
+
+		while (true) {
+
+			final String line = buffered.readLine();
+
+			if (line == null) {
+				break;
+			}
+
+			text.append(line);
+			text.append("\n");
+
+		}
+
+		buffered.close();
+
+		return text.toString();
+
+	}
+
+	public static void saveFileAsString(final String file, final String text)
+			throws Exception {
+
+		final PrintWriter writer = new PrintWriter(file, "UTF-8");
+
+		writer.write(text);
+
+		writer.close();
+
+	}
+
+	public static boolean deleteFiles(final File path) {
+
+		boolean isDeleted = true;
+
+		if (path == null || !path.exists()) {
+			return isDeleted;
+		}
+
+		if (path.isDirectory()) {
+			for (final File entry : path.listFiles()) {
+				isDeleted = isDeleted && deleteFiles(entry);
+			}
+		}
+
+		isDeleted = isDeleted && path.delete();
+
+		return isDeleted;
+
+	}
+
+	/** convert karaf.domain.com => /instance/com/domain/karaf */
+	public static String getInstancePathFromInstanceId(final String id) {
+
+		if (id == null || id.length() == 0) {
+			log.error("invalid id", new Exception());
+			return ConfigConst.Repo.DIR_INSTANCE;
+		}
+
+		final String[] array = id.split("\\.");
+
+		final int size = array.length;
+
+		final StringBuilder path = new StringBuilder(128);
+
+		path.append(ConfigConst.Repo.DIR_INSTANCE);
+
+		for (int k = size - 1; k >= 0; k--) {
+			path.append("/");
+			path.append(array[k]);
+		}
+
+		return path.toString();
+
+	}
+
+	public static String getInstancePathTrimLast(final String path) {
+
+		if (path == null || path.length() == 0
+				|| !path.startsWith(ConfigConst.Repo.DIR_INSTANCE)) {
+			log.error("invalid path", new Exception());
+			return ConfigConst.Repo.DIR_INSTANCE;
+		}
+
+		if (ConfigConst.Repo.DIR_INSTANCE.equals(path)) {
+			return ConfigConst.Repo.DIR_INSTANCE;
+		}
+
+		final int index = path.lastIndexOf("/");
+
+		return path.substring(0, index);
+
+	}
+
+}
