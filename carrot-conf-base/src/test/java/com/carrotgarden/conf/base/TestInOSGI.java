@@ -42,6 +42,7 @@ public class TestInOSGI {
 
 				junitBundles(),
 
+				repository("http://repo1.maven.org/").id("central"),
 				repository("http://download.eclipse.org/jgit/maven").id("jgit"),
 
 				mavenBundle().groupId("com.carrotgarden.osgi")
