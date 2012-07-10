@@ -1,0 +1,53 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.carrotgarden.base</groupId>
+		<artifactId>carrot-archon</artifactId>
+		<version>1.2.1</version>
+	</parent>
+
+	<groupId>com.carrotgarden.conf</groupId>
+	<artifactId>carrot-conf-diff</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>bundle</packaging>
+
+	<scm>
+		<url>https://github.com/carrot-garden/carrot-config</url>
+		<connection>scm:git:git://github.com/carrot-garden/carrot-config.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com/carrot-garden/carrot-config.git</developerConnection>
+	</scm>
+
+	<properties>
+
+		<carrotJavaVersion>1.6</carrotJavaVersion>
+
+	</properties>
+
+	<dependencies>
+
+		<!-- logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- https://github.com/typesafehub/config -->
+		<dependency>
+			<groupId>com.typesafe</groupId>
+			<artifactId>config</artifactId>
+			<version>0.5.0</version>
+			<scope>provided</scope>
+		</dependency>
+
+	</dependencies>
+
+</project>
