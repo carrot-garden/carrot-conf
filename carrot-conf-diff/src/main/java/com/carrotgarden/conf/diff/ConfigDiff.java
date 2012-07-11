@@ -114,15 +114,15 @@ public class ConfigDiff {
 
 				case LIST:
 
-					final ConfigList configListOLD = (ConfigList) valueOLD;
-					final ConfigList configListNEW = (ConfigList) valueNEW;
+					final ConfigList listOLD = (ConfigList) valueOLD;
+					final ConfigList listNEW = (ConfigList) valueNEW;
 
-					final List<Object> rawListOLD = configListOLD.unwrapped();
-					final List<Object> rawListNEW = configListNEW.unwrapped();
+					final List<Object> rawListOLD = listOLD.unwrapped();
+					final List<Object> rawListNEW = listNEW.unwrapped();
 
 					final List<Object> rawListDelete = new LinkedList<Object>();
 					final List<Object> rawListInsert = new LinkedList<Object>();
-					final List<Object> rawListTheSame = new LinkedList<Object>();
+					final List<Object> rawListUpdateNone = new LinkedList<Object>();
 
 					rawListDelete.addAll(rawListOLD);
 					rawListDelete.removeAll(rawListNEW);
@@ -130,14 +130,14 @@ public class ConfigDiff {
 					rawListInsert.addAll(rawListNEW);
 					rawListInsert.removeAll(rawListOLD);
 
-					rawListTheSame.addAll(rawListOLD);
-					rawListTheSame.addAll(rawListNEW);
-					rawListTheSame.removeAll(rawListDelete);
-					rawListTheSame.removeAll(rawListInsert);
+					rawListUpdateNone.addAll(rawListOLD);
+					rawListUpdateNone.addAll(rawListNEW);
+					rawListUpdateNone.removeAll(rawListDelete);
+					rawListUpdateNone.removeAll(rawListInsert);
 
 					final boolean hasDelete = !rawListDelete.isEmpty();
 					final boolean hasInsert = !rawListInsert.isEmpty();
-					final boolean hasTheSame = !rawListTheSame.isEmpty();
+					final boolean hasUpdateNone = !rawListUpdateNone.isEmpty();
 
 					if (hasDelete) {
 						final ConfigList listDIFF = ConfigValueFactory
@@ -151,9 +151,9 @@ public class ConfigDiff {
 						insert = insert.withValue(key, listDIFF);
 					}
 
-					if (hasTheSame) {
+					if (hasUpdateNone) {
 						final ConfigList listDIFF = ConfigValueFactory
-								.fromIterable(rawListTheSame);
+								.fromIterable(rawListUpdateNone);
 						updateNone = insert.withValue(key, listDIFF);
 					}
 
