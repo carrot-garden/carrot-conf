@@ -50,7 +50,7 @@ public class TestInOSGI {
 						.version("1.1.1"),
 
 				mavenBundle().groupId("com.typesafe").artifactId("config")
-						.version("0.4.1"),
+						.version("0.5.0"),
 
 				mavenBundle().groupId("org.apache.felix")
 						.artifactId("org.apache.felix.scr").version("1.6.0"),
