@@ -24,9 +24,9 @@
 	<packaging>bundle</packaging>
 
 	<scm>
-		<url>https://github.com/carrot-garden/carrot-config</url>
-		<connection>scm:git:git://github.com/carrot-garden/carrot-config.git</connection>
-		<developerConnection>scm:git:ssh://git@github.com/carrot-garden/carrot-config.git</developerConnection>
+		<url>https://github.com/carrot-garden/carrot-conf</url>
+		<connection>scm:git:git://github.com/carrot-garden/carrot-conf.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com/carrot-garden/carrot-conf.git</developerConnection>
 	</scm>
 
 	<properties>
