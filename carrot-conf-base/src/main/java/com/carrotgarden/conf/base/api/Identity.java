@@ -10,10 +10,21 @@ package com.carrotgarden.conf.base.api;
 /** instance identity descriptor */
 public interface Identity {
 
+	/** ordinal reflects discovery priority */
+	enum Source {
+		ENVIRONMENT_VARIABLE(), //
+		SYSTEM_PROPERTY(), //
+		PROGRAM_HOME(), //
+		USER_HOME(), //
+		AMAZON_URL_EC2(), //
+		UNKNONW(), // default
+
+	}
+
 	boolean isAvailable();
 
 	String getId();
 
-	IdentitySource getSource();
+	Source getSource();
 
 }

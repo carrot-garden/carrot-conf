@@ -7,16 +7,17 @@
  */
 package com.carrotgarden.conf.base.impl;
 
-import com.carrotgarden.conf.base.api.ConfigConst;
-import com.carrotgarden.conf.base.api.IdentitySource;
 
 public class IdentityFromSystemProperty extends IdentityFromUnknown {
+
+	protected IdentityFromSystemProperty(final ConstValues constValues) {
+		super(constValues);
+	}
 
 	@Override
 	protected String getValue() {
 
-		final String value = System
-				.getProperty(ConfigConst.Id.SYSTEM_PROPERTY);
+		final String value = System.getProperty(constValues.idSystemProperty());
 
 		if (value == null || value.length() == 0) {
 			log.debug("missing sys prop");
@@ -27,8 +28,8 @@ public class IdentityFromSystemProperty extends IdentityFromUnknown {
 	}
 
 	@Override
-	public IdentitySource getSource() {
-		return IdentitySource.SYSTEM_PROPERTY;
+	public Source getSource() {
+		return Source.SYSTEM_PROPERTY;
 	}
 
 }

@@ -16,14 +16,12 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.carrotgarden.conf.base.api.ConfigConst;
 import com.carrotgarden.conf.base.api.ConfigService;
 import com.carrotgarden.conf.base.api.Identity;
-import com.carrotgarden.conf.base.api.IdentityService;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
-@Component(immediate = true)
+@Component
 public class ConfigServiceProvider implements ConfigService {
 
 	private static final Logger log = LoggerFactory
@@ -31,120 +29,35 @@ public class ConfigServiceProvider implements ConfigService {
 
 	private final static Config INVALID = ConfigFactory.empty("invalid config");
 
-	private Config config = INVALID;
+	private final static Identity UNKNOWN = new IdentityFromUnknown(null);
 
-	@Override
-	public void updateConfig() {
+	private ConstValues constValues;
 
-		/** discover identity */
+	private Identity identity = UNKNOWN;
 
-		final Identity identity = identityService.getCurrentIdentity();
+	private IdentityService identityService;
 
-		if (identity == null || !identity.isAvailable()) {
-			log.error("invalid identity", new Exception());
-			return;
-		}
-
-		final String id = identity.getId();
-
-		final String pathBase = Util.getInstancePathFromInstanceId(id);
-
-		/** fetch from remote */
-
-		if (!repo.updateRepoArchon()) {
-			log.error("update archon failure", new Exception());
-			return;
-		}
-
-		/** discover new version */
-
-		if (!repo.updateRepoVersion()) {
-			log.error("update version failure", new Exception());
-			return;
-		}
-
-		final String versionPath = pathBase + "/"
-				+ ConfigConst.Repo.FILE_VERSION;
-
-		final File versionRoot = repo.getLocalVersion();
-
-		final File versionFile = new File(versionRoot, versionPath);
-
-		final Config versionConfig = ConfigFactory.parseFile(versionFile);
-
-		final String versionTag = versionConfig
-				.getString(ConfigConst.Key.VERSION);
-
-		/** discover new master */
-
-		if (!repo.updateRepoMaster(versionTag)) {
-			log.error("update master failure", new Exception());
-			return;
-		}
-
-		final File appRoot = repo.getLocalMaster();
-
-		String appPath = pathBase + "/" + ConfigConst.Repo.FILE_APPLICAION;
-
-		Config appConfig = INVALID;
-
-		while (true) {
-
-			/** iterate upward for cluster config */
-
-			final File appFile = new File(appRoot, appPath);
-
-			if (appFile.exists()) {
-				appConfig = ConfigFactory.parseFile(appFile);
-				log.debug("master config file : {}", appFile);
-				break;
-			}
-
-			appPath = Util.getInstancePathTrimLast(appPath);
-
-			if (ConfigConst.Repo.DIR_INSTANCE.equals(appPath)) {
-				log.error("master config file missing", new Exception());
-				break;
-			}
-
-		}
-
-		config = appConfig;
-
-	}
-
-	@Override
-	public boolean isConfigAvailable() {
-		return config != INVALID;
-	}
-
-	@Override
-	public Config getInstanceConfig() {
-		return config;
-	}
-
-	@Override
-	public File getConfigFolder() {
-		return repo.getLocalMaster();
-	}
-
-	//
+	private Config masterConfig = INVALID;
 
 	private RepoService repo;
+
+	private Config versionConfig = INVALID;
 
 	@Activate
 	protected void activate() {
 
-		log.debug("### actvate");
+		log.debug("activate");
 
-		final Config boot = ConfigFactory.load(ConfigConst.Repo.BOOT_FILE);
-		final Config conf = boot.getConfig(ConfigConst.Key.REPOSITORY);
+		final Config conf = reference()
+				.getConfig(constValues().keyRepository());
 
 		repo = new RepoServiceImpl(conf);
 
 		repo.ensureRepoAll();
 
-		updateConfig();
+		updateIdentity();
+		updateVersion();
+		updateMaster();
 
 	}
 
@@ -153,13 +66,237 @@ public class ConfigServiceProvider implements ConfigService {
 
 		repo = null;
 
-		log.debug("### deactvate");
+		log.debug("deactivate");
 
+	}
+
+	private ConstValues constValues() {
+		if (constValues == null) {
+			constValues = Util.constValues();
+		}
+		return constValues;
+	}
+
+	@Override
+	public Identity getIdentity() {
+		return identity;
+	}
+
+	@Override
+	public Config getMasterConfig() {
+		return masterConfig;
+	}
+
+	@Override
+	public File getMasterRoot() {
+		return repo.getLocalMaster();
+	}
+
+	@Override
+	public File getMasterInstance() {
+		return getRootOrInstance(getMasterRoot());
+	}
+
+	@Override
+	public Config getVersionConfig() {
+		return versionConfig;
+	}
+
+	@Override
+	public File getVersionRoot() {
+		return repo.getLocalVersion();
+	}
+
+	@Override
+	public File getVersionInstance() {
+		return getRootOrInstance(getVersionRoot());
+	}
+
+	private File getRootOrInstance(final File root) {
+		final File instanceFolder = instanceFolder(root);
+		if (instanceFolder == null) {
+			return root;
+		} else {
+			return instanceFolder;
+		}
 	}
 
 	//
 
-	private IdentityService identityService;
+	@Override
+	public boolean isIdentityValid() {
+		return identity.isAvailable();
+	}
+
+	@Override
+	public boolean isMasterValid() {
+		return masterConfig != INVALID;
+	}
+
+	@Override
+	public boolean isVersionValid() {
+		return versionConfig != INVALID;
+	}
+
+	private Config reference() {
+		final ClassLoader loader = ConfigServiceProvider.class.getClassLoader();
+		return ConfigFactory.defaultReference(loader);
+	}
+
+	//
+
+	@Override
+	public void updateIdentity() {
+		identity = identityService.getCurrentIdentity();
+	}
+
+	@Override
+	public void updateMaster() {
+
+		/** must have identity */
+		if (!isIdentityValid()) {
+			log.error("invalid identity", new Exception());
+			return;
+		}
+
+		/** must have version */
+		if (!isVersionValid()) {
+			log.error("invalid version", new Exception());
+			return;
+		}
+
+		/** must have version entry */
+		final String versionTag;
+		try {
+			versionTag = getVersionConfig().getString(
+					constValues().keyVersion());
+		} catch (final Exception e) {
+			log.error("missing version entry", e);
+			return;
+		}
+
+		/** discover new master */
+		if (!repo.updateRepoMaster(versionTag)) {
+			log.error("update master failure", new Exception());
+			return;
+		}
+
+		//
+
+		final File instanceFolder = instanceFolder(repo.getLocalMaster());
+
+		if (instanceFolder == null) {
+			masterConfig = INVALID;
+			log.error("missing instance folder", new Exception());
+			return;
+		}
+
+		log.debug("instance folder : {}", instanceFolder);
+
+		final String configName = constValues().repoFileApplication();
+
+		final File configFile = new File(instanceFolder, configName);
+
+		log.debug("instance file   : {}", configFile);
+
+		masterConfig = parse(configFile);
+
+	}
+
+	/** find instance folder based on root, identity, name convention */
+	private File instanceFolder(final File repoRoot) {
+
+		/** instance root : /instance */
+		final String instanceRoot = constValues().repoFolderInstance();
+
+		/** start with /instance/com/example/karaf/ */
+		String searchPath = instancePath();
+
+		/** iterate upward for cluster config discovery */
+		while (true) {
+
+			final File instanceFolder = new File(repoRoot, searchPath);
+
+			if (instanceFolder.exists() && instanceFolder.isDirectory()) {
+				/** found folder */
+				return instanceFolder;
+			}
+
+			/** trim : /instance/com/example/karaf/ -> /instance/com/example/ */
+			searchPath = Util.instancePathTrimLast(instanceRoot, searchPath);
+
+			if (instanceRoot.equals(searchPath)) {
+				/** nothing found */
+				return null;
+			}
+
+		}
+
+	}
+
+	@Override
+	public void updateVersion() {
+
+		/** must have identity */
+		if (!isIdentityValid()) {
+			log.error("invalid identity", new Exception());
+			return;
+		}
+
+		/** fetch from remote */
+		if (!repo.updateRepoArchon()) {
+			log.error("update archon failure", new Exception());
+			return;
+		}
+
+		/** discover new version */
+		if (!repo.updateRepoVersion()) {
+			log.error("update version failure", new Exception());
+			return;
+		}
+
+		//
+
+		final File instanceFolder = instanceFolder(repo.getLocalVersion());
+
+		if (instanceFolder == null) {
+			versionConfig = INVALID;
+			log.error("missing instance folder", new Exception());
+			return;
+		}
+
+		log.debug("instance folder : {}", instanceFolder);
+
+		final String configName = constValues().repoFileVersion();
+
+		final File configFile = new File(instanceFolder, configName);
+
+		log.debug("instance file   : {}", configFile);
+
+		versionConfig = parse(configFile);
+
+	}
+
+	private String instancePath() {
+
+		final String root = constValues().repoFolderInstance();
+
+		final String id = getIdentity().getId();
+
+		final String pathBase = Util.instancePathFromInstanceId(root, id);
+
+		return pathBase;
+
+	}
+
+	private Config parse(final File file) {
+		try {
+			return ConfigFactory.parseFile(file);
+		} catch (final Exception e) {
+			log.error("", e);
+			return INVALID;
+		}
+	}
 
 	@Reference
 	protected void bind(final IdentityService s) {

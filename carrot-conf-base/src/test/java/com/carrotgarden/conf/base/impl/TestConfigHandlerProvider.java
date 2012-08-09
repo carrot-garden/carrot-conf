@@ -10,16 +10,16 @@ package com.carrotgarden.conf.base.impl;
 import static org.testng.AssertJUnit.*;
 
 import java.net.URL;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
 import util.JDK;
 
-import com.carrotgarden.conf.base.api.ConfigConst;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
@@ -28,18 +28,25 @@ public class TestConfigHandlerProvider {
 	private static final Logger log = LoggerFactory
 			.getLogger(TestConfigHandlerProvider.class);
 
-	private final String protocol = ConfigHandlerProvider.PROTOCOL;
-	private final ConfigHandlerProvider handler = new ConfigHandlerProvider();
+	private static final String protocol = ConfigHandlerProvider.PROTOCOL;
+	private static final ConfigHandlerProvider handler = new ConfigHandlerProvider();
 
-	final IdentityServiceProvider identityService = new IdentityServiceProvider();
+	private static final IdentityServiceProvider identityService = new IdentityServiceProvider();
 
-	final ConfigServiceProvider configService = new ConfigServiceProvider();
+	private static final ConfigServiceProvider configService = new ConfigServiceProvider();
+
+	private static final String id = "karaf.company.com";
+
+	private static final String local = "./target/"
+			+ TestConfigHandlerProvider.class.getSimpleName() + "-"
+			+ UUID.randomUUID().toString();
 
 	/** emulate osgi setup */
-	@BeforeTest
-	protected void setUp() throws Exception {
+	@BeforeClass
+	public static void testInit() throws Exception {
 
-		System.setProperty(ConfigConst.Id.SYSTEM_PROPERTY, "karaf.company.com");
+		System.setProperty("carrot.config.identity", id);
+		System.setProperty("carrot.config.repository.local", local);
 
 		configService.bind(identityService);
 		configService.activate();
@@ -49,10 +56,14 @@ public class TestConfigHandlerProvider {
 
 		JDK.handlerAdd(protocol, handler);
 
+		configService.updateIdentity();
+		configService.updateVersion();
+		configService.updateMaster();
+
 	}
 
-	@AfterTest
-	protected void tearDown() throws Exception {
+	@AfterClass
+	protected void testDone() throws Exception {
 
 		JDK.handlerRemove(protocol);
 

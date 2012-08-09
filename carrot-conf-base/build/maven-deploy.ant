@@ -25,7 +25,13 @@
 			<arg value="clean" />
 			<arg value="deploy" />
 
+			<arg value="--activate-profiles" />
+			<arg value="jenkins" />
+
+			<arg value="--errors" />
+
 		</exec>
+
 	</target>
 
 </project>

@@ -10,7 +10,6 @@ package com.carrotgarden.conf.base.impl;
 import static org.testng.AssertJUnit.*;
 
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 import java.net.URL;
 import java.util.UUID;
@@ -22,22 +21,27 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.AbstractHandler;
+import org.junit.BeforeClass;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-import com.carrotgarden.conf.base.api.ConfigConst;
 import com.carrotgarden.conf.base.api.Identity;
-import com.carrotgarden.conf.base.api.IdentitySource;
-
-import util.JDK;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
+import com.typesafe.config.ConfigValueFactory;
 
 public class TestIdentityFromAmazonEC2 {
 
 	private final static Logger log = LoggerFactory
 			.getLogger(TestIdentityFromAmazonEC2.class);
+
+	@BeforeClass
+	public static void testInit() {
+
+	}
 
 	private final String value = UUID.randomUUID().toString();
 
@@ -45,14 +49,15 @@ public class TestIdentityFromAmazonEC2 {
 
 	class UserDataHandler extends AbstractHandler {
 
+		final String propName = Util.constValues().keyIdentity();
+
 		@Override
 		public void handle(final String target, final Request baseRequest,
 				final HttpServletRequest request,
 				final HttpServletResponse response) throws IOException,
 				ServletException {
 
-			final String text = //
-			ConfigConst.Key.INSTANCE + " = " + "\"" + value + "\"";
+			final String text = propName + " = " + "\"" + value + "\"";
 
 			response.getWriter().println(text);
 
@@ -75,9 +80,11 @@ public class TestIdentityFromAmazonEC2 {
 		return 8123;
 	}
 
-	private void hackURL() throws Exception {
+	private Config hackURL(final Config source) throws Exception {
 
-		final String original = ConfigConst.Id.AMAZON_EC2_URL;
+		final String path = "id.amazon-url-ec2";
+
+		final String original = source.getString(path);
 
 		final URL good = new URL(original);
 
@@ -86,21 +93,20 @@ public class TestIdentityFromAmazonEC2 {
 
 		final URL hack = new URL(good.getProtocol(), host, port, good.getFile());
 
-		final Field field = ConfigConst.Id.class.getField("AMAZON_EC2_URL");
+		final Config target = source.withValue(path,
+				ConfigValueFactory.fromAnyRef(hack.toString()));
 
-		JDK.setHiddenFiled(field, null, hack.toString());
-
-		final String replacement = ConfigConst.Id.AMAZON_EC2_URL;
+		final String replacement = target.getString(path);
 
 		log.debug("original    = " + original);
 		log.debug("replacement = " + replacement);
+
+		return target;
 
 	}
 
 	@BeforeTest
 	protected void setUp() throws Exception {
-
-		hackURL();
 
 		final InetSocketAddress addr = //
 		new InetSocketAddress(getHost(), getPort());
@@ -121,9 +127,17 @@ public class TestIdentityFromAmazonEC2 {
 	}
 
 	@Test
-	public void testIdentity() {
+	public void testIdentity() throws Exception {
 
-		final Identity id0 = IdentitySource.AMAZON_EC2.newIdentity();
+		final Config configIn = ConfigFactory.defaultReference().getConfig(
+				"carrot.config.const");
+
+		final Config configOut = hackURL(configIn);
+
+		final ConstValues constValues = new ConstValues(configOut);
+
+		final Identity id0 = new IdentityFromAmazonEC2(constValues);
+
 		assertTrue(id0.isAvailable());
 		assertEquals(id0.getId(), value);
 

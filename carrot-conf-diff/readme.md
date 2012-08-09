@@ -7,9 +7,8 @@
     http://www.opensource.org/licenses/bsd-license.php
 
 -->
-carrot-conf-diff
-================
+### info
 
-a solution for
+utility to provide config diff
 
 https://github.com/typesafehub/config/issues/23

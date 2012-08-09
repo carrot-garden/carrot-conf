@@ -13,8 +13,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-import com.carrotgarden.conf.base.api.ConfigConst;
-import com.carrotgarden.conf.base.api.IdentitySource;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
@@ -27,12 +25,16 @@ import com.typesafe.config.ConfigFactory;
  * */
 public class IdentityFromAmazonEC2 extends IdentityFromUnknown {
 
+	protected IdentityFromAmazonEC2(final ConstValues constValues) {
+		super(constValues);
+	}
+
 	@Override
 	protected String getValue() {
 
 		try {
 
-			final URL url = new URL(ConfigConst.Id.AMAZON_EC2_URL);
+			final URL url = new URL(constValues.idAmazonUrlEC2());
 
 			final HttpURLConnection connection = (HttpURLConnection) url
 					.openConnection();
@@ -50,7 +52,7 @@ public class IdentityFromAmazonEC2 extends IdentityFromUnknown {
 
 			buffered.close();
 
-			return conf.getString(ConfigConst.Id.SYSTEM_PROPERTY);
+			return conf.getString(constValues.keyIdentity());
 
 		} catch (final Throwable e) {
 
@@ -63,8 +65,8 @@ public class IdentityFromAmazonEC2 extends IdentityFromUnknown {
 	}
 
 	@Override
-	public IdentitySource getSource() {
-		return IdentitySource.AMAZON_EC2;
+	public Source getSource() {
+		return Source.AMAZON_URL_EC2;
 	}
 
 }

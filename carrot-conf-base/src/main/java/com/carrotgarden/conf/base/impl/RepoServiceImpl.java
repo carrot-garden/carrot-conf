@@ -14,7 +14,6 @@ import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.Ref;
-import org.eclipse.jgit.revwalk.RevTag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,7 +30,7 @@ public class RepoServiceImpl implements RepoService {
 	public static final String VERSION = "version";
 
 	private final String local; // file url
-	private final String remote; // git url
+	private final String remote; // git uri
 	private final int timeout; // seconds
 
 	public RepoServiceImpl(final Config conf) {
@@ -243,7 +242,8 @@ public class RepoServiceImpl implements RepoService {
 		return updateRepoBranch(VERSION);
 	}
 
-	protected boolean isBranchPresent(final Git git, final String branch) {
+	protected boolean isBranchPresent(final Git git, final String branch)
+			throws Exception {
 
 		final List<Ref> branchRefList = git.branchList().call();
 
@@ -296,10 +296,10 @@ public class RepoServiceImpl implements RepoService {
 	protected void asasertRepoTag(final Git git, final String tag)
 			throws Exception {
 
-		final List<RevTag> tagList = git.tagList().call();
+		final List<Ref> tagList = git.tagList().call();
 
-		for (final RevTag revTag : tagList) {
-			if (revTag.getTagName().equals(getRefsTags(tag))) {
+		for (final Ref revTag : tagList) {
+			if (revTag.getLeaf().getName().equals(getRefsTags(tag))) {
 				return;
 			}
 		}

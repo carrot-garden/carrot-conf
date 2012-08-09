@@ -14,20 +14,51 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.carrotgarden.conf.base.api.Identity;
-import com.carrotgarden.conf.base.api.IdentityService;
-import com.carrotgarden.conf.base.api.IdentitySource;
+import com.carrotgarden.conf.base.api.Identity.Source;
 
 @Component
 public class IdentityServiceProvider implements IdentityService {
 
-	final Logger logger = LoggerFactory.getLogger(getClass());
+	private final Logger log = LoggerFactory.getLogger(getClass());
+
+	private ConstValues constValues;
+
+	private ConstValues constValues() {
+		if (constValues == null) {
+			constValues = Util.constValues();
+		}
+		return constValues;
+	}
 
 	@Override
 	public Identity getCurrentIdentity() {
 
-		for (final IdentitySource source : IdentitySource.values()) {
+		final ConstValues constValues = constValues();
 
-			final Identity identity = source.newIdentity();
+		for (final Source source : Source.values()) {
+
+			final Identity identity;
+
+			switch (source) {
+			case ENVIRONMENT_VARIABLE:
+				identity = new IdentityFromEnvironment(constValues);
+				break;
+			case SYSTEM_PROPERTY:
+				identity = new IdentityFromSystemProperty(constValues);
+				break;
+			case PROGRAM_HOME:
+				identity = new IdentityFromProgramHome(constValues);
+				break;
+			case USER_HOME:
+				identity = new IdentityFromUserHome(constValues);
+				break;
+			case AMAZON_URL_EC2:
+				identity = new IdentityFromAmazonEC2(constValues);
+				break;
+			default:
+				identity = new IdentityFromUnknown(constValues);
+				break;
+			}
 
 			if (identity.isAvailable()) {
 				return identity;
@@ -35,18 +66,18 @@ public class IdentityServiceProvider implements IdentityService {
 
 		}
 
-		return IdentitySource.UNKNONW.newIdentity();
+		return new IdentityFromUnknown(constValues);
 
 	}
 
 	@Activate
 	protected void activate() {
-		//
+		log.debug("activate");
 	}
 
 	@Deactivate
 	protected void deactivate() {
-		//
+		log.debug("deactivate");
 	}
 
 }

@@ -17,11 +17,16 @@ import java.net.URL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.carrotgarden.conf.base.api.ConfigConst;
+import com.typesafe.config.ConfigFactory;
 
 public class Util {
 
 	private static final Logger log = LoggerFactory.getLogger(Util.class);
+
+	public static ConstValues constValues() {
+		return new ConstValues(ConfigFactory.defaultReference().getConfig(
+				"carrot.config.const"));
+	}
 
 	public static String loadUrlAsString(final String urlPath) throws Exception {
 
@@ -111,11 +116,12 @@ public class Util {
 	}
 
 	/** convert karaf.domain.com => /instance/com/domain/karaf */
-	public static String getInstancePathFromInstanceId(final String id) {
+	public static String instancePathFromInstanceId(final String root,
+			final String id) {
 
 		if (id == null || id.length() == 0) {
 			log.error("invalid id", new Exception());
-			return ConfigConst.Repo.DIR_INSTANCE;
+			return root;
 		}
 
 		final String[] array = id.split("\\.");
@@ -124,7 +130,7 @@ public class Util {
 
 		final StringBuilder path = new StringBuilder(128);
 
-		path.append(ConfigConst.Repo.DIR_INSTANCE);
+		path.append(root);
 
 		for (int k = size - 1; k >= 0; k--) {
 			path.append("/");
@@ -135,16 +141,16 @@ public class Util {
 
 	}
 
-	public static String getInstancePathTrimLast(final String path) {
+	public static String instancePathTrimLast(final String root,
+			final String path) {
 
-		if (path == null || path.length() == 0
-				|| !path.startsWith(ConfigConst.Repo.DIR_INSTANCE)) {
+		if (path == null || path.length() == 0 || !path.startsWith(root)) {
 			log.error("invalid path", new Exception());
-			return ConfigConst.Repo.DIR_INSTANCE;
+			return root;
 		}
 
-		if (ConfigConst.Repo.DIR_INSTANCE.equals(path)) {
-			return ConfigConst.Repo.DIR_INSTANCE;
+		if (root.equals(path)) {
+			return root;
 		}
 
 		final int index = path.lastIndexOf("/");

@@ -7,16 +7,17 @@
  */
 package com.carrotgarden.conf.base.impl;
 
-import com.carrotgarden.conf.base.api.ConfigConst;
-import com.carrotgarden.conf.base.api.IdentitySource;
 
 public class IdentityFromEnvironment extends IdentityFromUnknown {
+
+	protected IdentityFromEnvironment(final ConstValues constValues) {
+		super(constValues);
+	}
 
 	@Override
 	protected String getValue() {
 
-		final String value = System
-				.getenv(ConfigConst.Id.ENVIRONMENT_VARIABLE);
+		final String value = System.getenv(constValues.idEnvironmentVariable());
 
 		if (value == null || value.length() == 0) {
 			log.debug("missing env var");
@@ -27,8 +28,8 @@ public class IdentityFromEnvironment extends IdentityFromUnknown {
 	}
 
 	@Override
-	public IdentitySource getSource() {
-		return IdentitySource.ENVIRONMENT_VARIABLE;
+	public Source getSource() {
+		return Source.ENVIRONMENT_VARIABLE;
 	}
 
 }

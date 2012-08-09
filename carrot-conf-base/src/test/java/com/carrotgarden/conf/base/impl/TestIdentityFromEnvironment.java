@@ -17,13 +17,11 @@ import org.testng.annotations.Test;
 
 import util.JDK;
 
-import com.carrotgarden.conf.base.api.ConfigConst;
 import com.carrotgarden.conf.base.api.Identity;
-import com.carrotgarden.conf.base.api.IdentitySource;
 
 public class TestIdentityFromEnvironment {
 
-	final static Logger log = LoggerFactory
+	private final static Logger log = LoggerFactory
 			.getLogger(TestIdentityFromEnvironment.class);
 
 	protected void setUp() throws Exception {
@@ -36,9 +34,13 @@ public class TestIdentityFromEnvironment {
 	@Test
 	public void testIdentity() {
 
-		JDK.setEnv(ConfigConst.Id.ENVIRONMENT_VARIABLE, null);
+		final ConstValues constValues = Util.constValues();
 
-		final Identity id0 = IdentitySource.ENVIRONMENT_VARIABLE.newIdentity();
+		final String propName = constValues.idEnvironmentVariable();
+
+		JDK.setEnv(propName, null);
+
+		final Identity id0 = new IdentityFromEnvironment(constValues);
 		assertFalse(id0.isAvailable());
 		assertEquals(id0.getId(), "");
 
@@ -46,15 +48,15 @@ public class TestIdentityFromEnvironment {
 
 		final String value = UUID.randomUUID().toString();
 
-		JDK.setEnv(ConfigConst.Id.ENVIRONMENT_VARIABLE, value);
+		JDK.setEnv(propName, value);
 
-		final Identity id1 = IdentitySource.ENVIRONMENT_VARIABLE.newIdentity();
+		final Identity id1 = new IdentityFromEnvironment(constValues);
 		assertTrue(id1.isAvailable());
 		assertEquals(id1.getId(), value);
 
 		//
 
-		JDK.setEnv(ConfigConst.Id.ENVIRONMENT_VARIABLE, null);
+		JDK.setEnv(propName, null);
 
 	}
 

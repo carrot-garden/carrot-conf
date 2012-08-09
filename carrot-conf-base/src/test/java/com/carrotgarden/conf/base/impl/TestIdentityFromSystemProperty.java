@@ -15,13 +15,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
 
-import com.carrotgarden.conf.base.api.ConfigConst;
 import com.carrotgarden.conf.base.api.Identity;
-import com.carrotgarden.conf.base.api.IdentitySource;
 
 public class TestIdentityFromSystemProperty {
 
-	final static Logger log = LoggerFactory
+	private final static Logger log = LoggerFactory
 			.getLogger(TestIdentityFromSystemProperty.class);
 
 	protected void setUp() throws Exception {
@@ -34,9 +32,13 @@ public class TestIdentityFromSystemProperty {
 	@Test
 	public void testIdentity() {
 
-		System.setProperty(ConfigConst.Id.SYSTEM_PROPERTY, "");
+		final ConstValues constValues = Util.constValues();
 
-		final Identity id0 = IdentitySource.SYSTEM_PROPERTY.newIdentity();
+		final String propName = constValues.idSystemProperty();
+
+		System.setProperty(propName, "");
+
+		final Identity id0 = new IdentityFromSystemProperty(constValues);
 		assertFalse(id0.isAvailable());
 		assertEquals(id0.getId(), "");
 
@@ -44,15 +46,15 @@ public class TestIdentityFromSystemProperty {
 
 		final String value = UUID.randomUUID().toString();
 
-		System.setProperty(ConfigConst.Id.SYSTEM_PROPERTY, value);
+		System.setProperty(propName, value);
 
-		final Identity id1 = IdentitySource.SYSTEM_PROPERTY.newIdentity();
+		final Identity id1 = new IdentityFromSystemProperty(constValues);
 		assertTrue(id1.isAvailable());
 		assertEquals(id1.getId(), value);
 
 		//
 
-		System.setProperty(ConfigConst.Id.SYSTEM_PROPERTY, "");
+		System.setProperty(propName, "");
 
 	}
 

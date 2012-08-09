@@ -13,14 +13,19 @@ import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
+import com.carrotgarden.conf.base.api.Identity;
+import com.carrotgarden.conf.base.impl.IdentityService;
 import com.carrotgarden.conf.base.impl.IdentityServiceProvider;
+import com.carrotgarden.conf.base.impl.Util;
 
 public class TestConfigService {
 
 	@BeforeTest
 	protected void setUp() throws Exception {
 
-		System.setProperty(ConfigConst.Id.SYSTEM_PROPERTY, "karaf.company.com");
+		final String propName = Util.constValues().idSystemProperty();
+
+		System.setProperty(propName, "karaf.company.com");
 
 	}
 

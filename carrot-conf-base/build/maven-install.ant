@@ -25,6 +25,11 @@
 			<arg value="clean" />
 			<arg value="install" />
 
+			<arg value="--activate-profiles" />
+			<arg value="jenkins" />
+
+			<arg value="--errors" />
+
 		</exec>
 	</target>
 

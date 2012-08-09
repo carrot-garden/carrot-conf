@@ -11,11 +11,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.carrotgarden.conf.base.api.Identity;
-import com.carrotgarden.conf.base.api.IdentitySource;
 
 public class IdentityFromUnknown implements Identity {
 
 	protected final Logger log = LoggerFactory.getLogger(getClass());
+
+	protected final ConstValues constValues;
+
+	protected IdentityFromUnknown(final ConstValues constValues) {
+		this.constValues = constValues;
+	}
 
 	protected String getValue() {
 		return null;
@@ -37,8 +42,13 @@ public class IdentityFromUnknown implements Identity {
 	}
 
 	@Override
-	public IdentitySource getSource() {
-		return IdentitySource.UNKNONW;
+	public Source getSource() {
+		return Source.UNKNONW;
+	}
+
+	@Override
+	public String toString() {
+		return getId();
 	}
 
 }

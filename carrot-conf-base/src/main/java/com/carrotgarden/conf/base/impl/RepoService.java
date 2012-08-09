@@ -9,6 +9,7 @@ package com.carrotgarden.conf.base.impl;
 
 import java.io.File;
 
+/** internal */
 public interface RepoService {
 
 	/** location of parent bare repo */

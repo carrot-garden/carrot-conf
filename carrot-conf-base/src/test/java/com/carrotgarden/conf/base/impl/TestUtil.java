@@ -17,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
 
-import com.carrotgarden.conf.base.api.ConfigConst;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
@@ -31,8 +30,10 @@ public class TestUtil {
 	protected void tearDown() throws Exception {
 	}
 
+	static final String ROOT = "/instance";
+
 	@Test
-	public void testFileAsString1() throws Exception {
+	public void testFileAsString() throws Exception {
 
 		final String name = UUID.randomUUID().toString();
 
@@ -47,25 +48,6 @@ public class TestUtil {
 		new File(file).delete();
 
 		assertEquals(textSave, textLoad);
-
-	}
-
-	static final String TEXT = ""
-			+ "A journey of a thousand miles begins with a single step" + "\n"
-			+ "千里之行，始于足下」 老子" + "\n" + "qiān lǐ zhī xíng，shǐ yú zú xià" + "\n"
-			+ "Un voyage de mille miles commence par une seule étape" + "\n"
-			+ "Путь в тысячу миль начинается с одного шага" + "\n"
-			+ "Eine Reise von tausend Meilen beginnt mit dem ersten Schritt"
-			+ "\n";
-
-	@Test
-	public void testFileAsString2() throws Exception {
-
-		final String file = "./src/test/resources/test.file";
-
-		final String text = Util.loadFileAsString(file);
-
-		assertEquals(text, TEXT);
 
 	}
 
@@ -85,8 +67,11 @@ public class TestUtil {
 	@Test
 	public void testOverride() {
 
-		final Config boot = ConfigFactory.load(ConfigConst.Repo.BOOT_FILE);
-		final Config tree = boot.getConfig(ConfigConst.Key.REPOSITORY);
+		final String propName = Util.constValues().keyRepository();
+
+		final Config root = ConfigFactory.defaultReference();
+
+		final Config tree = root.getConfig(propName);
 
 		final Properties properties = new Properties();
 		properties.put("local", "override");
@@ -104,39 +89,33 @@ public class TestUtil {
 	@Test
 	public void testPath() {
 
-		assertEquals(Util.getInstancePathFromInstanceId(null),
-				ConfigConst.Repo.DIR_INSTANCE);
+		assertEquals(Util.instancePathFromInstanceId(ROOT, null), ROOT);
 
-		assertEquals(Util.getInstancePathFromInstanceId(""),
-				ConfigConst.Repo.DIR_INSTANCE);
-
-		assertEquals(Util.getInstancePathFromInstanceId("karaf-company-com"),
-				ConfigConst.Repo.DIR_INSTANCE + "/karaf-company-com");
-
-		assertEquals(Util.getInstancePathFromInstanceId("karaf.company.com"),
-				ConfigConst.Repo.DIR_INSTANCE + "/com/company/karaf");
+		assertEquals(Util.instancePathFromInstanceId(ROOT, ""), ROOT);
 
 		assertEquals(
-				Util.getInstancePathFromInstanceId("123.karaf.company.com"),
-				ConfigConst.Repo.DIR_INSTANCE + "/com/company/karaf/123");
+				Util.instancePathFromInstanceId(ROOT, "karaf-company-com"),
+				ROOT + "/karaf-company-com");
+
+		assertEquals(
+				Util.instancePathFromInstanceId(ROOT, "karaf.company.com"),
+				ROOT + "/com/company/karaf");
+
+		assertEquals(
+				Util.instancePathFromInstanceId(ROOT, "123.karaf.company.com"),
+				ROOT + "/com/company/karaf/123");
 
 	}
 
 	@Test
 	public void testTrim() {
 
-		assertEquals(
-				Util.getInstancePathTrimLast(ConfigConst.Repo.DIR_INSTANCE),
-				ConfigConst.Repo.DIR_INSTANCE);
+		assertEquals(Util.instancePathTrimLast(ROOT, ROOT), ROOT);
 
-		assertEquals(
-				Util.getInstancePathTrimLast(ConfigConst.Repo.DIR_INSTANCE
-						+ "/trim"), ConfigConst.Repo.DIR_INSTANCE);
+		assertEquals(Util.instancePathTrimLast(ROOT, ROOT + "/trim"), ROOT);
 
-		assertEquals(
-				Util.getInstancePathTrimLast(ConfigConst.Repo.DIR_INSTANCE
-						+ "/trim/more"), ConfigConst.Repo.DIR_INSTANCE
-						+ "/trim");
+		assertEquals(Util.instancePathTrimLast(ROOT, ROOT + "/trim/more"), ROOT
+				+ "/trim");
 
 	}
 

@@ -13,12 +13,48 @@ import com.typesafe.config.Config;
 
 public interface ConfigService {
 
-	boolean isConfigAvailable();
+	/** current identity */
+	Identity getIdentity();
 
-	void updateConfig();
+	//
 
-	Config getInstanceConfig();
+	/** current application.conf */
+	Config getMasterConfig();
 
-	File getConfigFolder();
+	/** master repo root */
+	File getMasterRoot();
+
+	/** master instance folder, location of application.conf */
+	File getMasterInstance();
+
+	//
+
+	/** current version.conf */
+	Config getVersionConfig();
+
+	/** version repo root */
+	File getVersionRoot();
+
+	/** version instance folder, location of version.conf */
+	File getVersionInstance();
+
+	//
+
+	boolean isIdentityValid();
+
+	boolean isMasterValid();
+
+	boolean isVersionValid();
+
+	//
+
+	/** discover identity */
+	void updateIdentity();
+
+	/** does not fetch archon; update master from archon */
+	void updateMaster();
+
+	/** fetch archon from remote, update version from archon */
+	void updateVersion();
 
 }
