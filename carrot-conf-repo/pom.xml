@@ -97,7 +97,6 @@
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-all</artifactId>
-			<version>1.9.0</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -113,7 +112,7 @@
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-server</artifactId>
-			<version>8.1.4.v20120524</version>
+			<version>8.1.5.v20120716</version>
 			<scope>test</scope>
 		</dependency>
 
@@ -167,37 +166,6 @@
 			<plugin>
 				<groupId>com.carrotgarden.maven</groupId>
 				<artifactId>carrot-maven-scr-plugin</artifactId>
-				<version>1.1.4</version>
-				<configuration>
-					<excludedServices>
-						<service>java.lang.Runnable</service>
-						<service>java.lang.Cloneable</service>
-					</excludedServices>
-					<eclipseSettings>
-						<!-- eclipse maven console settings -->
-						<logBuildTimes>true</logBuildTimes>
-						<logExcludedServices>true</logExcludedServices>
-						<logInvocationDetails>true</logInvocationDetails>
-						<logErrorTraces>true</logErrorTraces>
-						<logComponentDescriptors>true</logComponentDescriptors>
-					</eclipseSettings>
-				</configuration>
-				<executions>
-					<execution>
-						<id>clean</id>
-						<phase>clean</phase>
-						<goals>
-							<goal>clean</goal>
-						</goals>
-					</execution>
-					<execution>
-						<id>generate</id>
-						<phase>process-classes</phase>
-						<goals>
-							<goal>generate</goal>
-						</goals>
-					</execution>
-				</executions>
 			</plugin>
 
 			<!-- generate bundle manifest -->

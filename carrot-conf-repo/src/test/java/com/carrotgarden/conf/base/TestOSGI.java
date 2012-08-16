@@ -67,7 +67,7 @@ public class TestOSGI {
 
 				mavenBundle().groupId("com.carrotgarden.wrap")
 						.artifactId("carrot-wrap-jgit")
-						.version("2.0.0-build000"),
+						.version("2.0.0-build004"),
 
 				mavenBundle().groupId("org.apache.servicemix.bundles")
 						.artifactId("org.apache.servicemix.bundles.jsch")
