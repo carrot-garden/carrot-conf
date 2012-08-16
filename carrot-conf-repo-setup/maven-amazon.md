@@ -7,6 +7,6 @@
     http://www.opensource.org/licenses/bsd-license.php
 
 -->
-### info
-
-git-based config repo provider
+# maven marker file
+when this file is present in project root,
+artifacts will be published to private repo.

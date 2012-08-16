@@ -9,4 +9,5 @@
 -->
 ### info
 
-git-based config repo provider
+identity discovery
+

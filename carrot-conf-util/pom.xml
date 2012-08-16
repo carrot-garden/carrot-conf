@@ -44,6 +44,7 @@
 			<artifactId>hazelcast</artifactId>
 			<version>${carrotHazelVersion}</version>
 			<scope>provided</scope>
+			<optional>true</optional>
 		</dependency>
 
 		<!-- logging -->

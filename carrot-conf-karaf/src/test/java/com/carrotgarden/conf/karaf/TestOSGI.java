@@ -13,6 +13,8 @@ import java.util.UUID;
 
 import javax.inject.Inject;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
@@ -31,7 +33,7 @@ import com.carrotgarden.conf.karaf.api.ConfigManager;
 @ExamReactorStrategy(AllConfinedStagedReactorFactory.class)
 public class TestOSGI {
 
-	protected final Logger log = LoggerFactory.getLogger(getClass());
+	private final static Logger log = LoggerFactory.getLogger(TestOSGI.class);
 
 	private final String id = "karaf.company.com";
 
@@ -43,7 +45,7 @@ public class TestOSGI {
 
 		return options(
 
-				systemProperty("carrot.config.identity").value(id),
+				// systemProperty("carrot.config.identity").value(id),
 				systemProperty("carrot.config.repository.local").value(local),
 
 				systemTimeout(30 * 1000),
@@ -73,7 +75,10 @@ public class TestOSGI {
 						.artifactId("org.apache.felix.scr").version("1.6.0"),
 
 				mavenBundle().groupId("com.carrotgarden.conf")
-						.artifactId("carrot-conf-base")
+						.artifactId("carrot-conf-id").version("1.0.0-SNAPSHOT"),
+
+				mavenBundle().groupId("com.carrotgarden.conf")
+						.artifactId("carrot-conf-repo")
 						.version("1.0.0-SNAPSHOT"),
 
 				mavenBundle().groupId("com.carrotgarden.conf")
@@ -82,7 +87,7 @@ public class TestOSGI {
 
 				mavenBundle().groupId("com.carrotgarden.wrap")
 						.artifactId("carrot-wrap-jgit")
-						.version("2.0.0-build000"),
+						.version("2.0.0-build004"),
 
 				mavenBundle().groupId("org.apache.servicemix.bundles")
 						.artifactId("org.apache.servicemix.bundles.jsch")
@@ -104,6 +109,16 @@ public class TestOSGI {
 				// .artifactId("org.apache.karaf.system.core")
 				// .version("3.0.0-SNAPSHOT"),
 
+				mavenBundle().groupId("org.apache.karaf.log")
+						.artifactId("org.apache.karaf.log.core")
+						.version("3.0.0-SNAPSHOT"),
+
+				mavenBundle().groupId("org.ops4j.pax.logging")
+						.artifactId("pax-logging-api").version("1.6.9"),
+
+				// mavenBundle().groupId("org.ops4j.pax.logging")
+				// .artifactId("pax-logging-service").version("1.6.9"),
+
 				bundle("reference:file:target/classes"),
 
 				workingDirectory(System.getProperty("user.dir")
@@ -119,6 +134,24 @@ public class TestOSGI {
 	@Inject
 	private ConfigManager configManager;
 
+	@Before
+	public void init() {
+
+		// providerLog = Logger.getLogger(ConfigManagerProvider.class);
+
+		// providerLog.addAppender(appender);
+
+	}
+
+	@After
+	public void done() {
+
+		// providerLog.removeAppender(appender);
+
+		// log.info("### size ### " + appender.eventList.size());
+
+	}
+
 	@Test
 	public void test() throws Exception {
 
@@ -130,7 +163,7 @@ public class TestOSGI {
 			log.info("### active bundle : " + bundle.getSymbolicName());
 		}
 
-		Thread.sleep(10 * 1000);
+		Thread.sleep(15 * 1000);
 
 		log.info("################################");
 

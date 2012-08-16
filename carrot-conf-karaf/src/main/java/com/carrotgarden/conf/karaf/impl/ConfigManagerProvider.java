@@ -30,7 +30,15 @@ import com.typesafe.config.ConfigFactory;
 @Component(immediate = true)
 public class ConfigManagerProvider implements ConfigManager {
 
-	protected final Logger log = LoggerFactory.getLogger(getClass());
+	private final static Logger log = LoggerFactory
+			.getLogger(ConfigManagerProvider.class);
+
+	private final static String PATH_CALENDAR = "carrot.config.calendar";
+	private final static String PATH_VERSION = "carrot.config.version";
+
+	private final static String KEY_IDENTITY = "identity";
+	private final static String KEY_RESTART = "restart";
+	private final static String KEY_VERSION = "version";
 
 	/** bundle class loader */
 	private static ClassLoader loader() {
@@ -44,9 +52,9 @@ public class ConfigManagerProvider implements ConfigManager {
 
 	/** unique job names */
 	private static final String JOB_ACTIVATE = name("activate");
-	private static final String JOB_IDENTITY = name("identity");
-	private static final String JOB_VERSION = name("version");
-	private static final String JOB_RESTART = name("restart");
+	private static final String JOB_IDENTITY = name(KEY_IDENTITY);
+	private static final String JOB_RESTART = name(KEY_RESTART);
+	private static final String JOB_VERSION = name(KEY_VERSION);
 
 	/**
 	 * guard against job invocation that can happen after component is
@@ -56,16 +64,16 @@ public class ConfigManagerProvider implements ConfigManager {
 		return configService != null && scheduler != null;
 	}
 
-	/** runs on component activation */
+	/** runs once on component activation */
 	private final Runnable jobActivate = new Runnable() {
 		@Override
 		public void run() {
-			log.debug("### activate ###");
-			if (isActive()) {
-				processActivate();
-				processCalendar();
-				processLink();
-			}
+			log.debug("activate");
+			final boolean is = isActive() //
+					&& processCalendar(true) // default schedule
+					&& processActivate() //
+					&& processCalendar(false) // instance schedule
+			;
 		}
 	};
 
@@ -73,10 +81,9 @@ public class ConfigManagerProvider implements ConfigManager {
 	private final Runnable jobIdentity = new Runnable() {
 		@Override
 		public void run() {
-			log.debug("### identity ###");
-			if (isActive()) {
-				processIdentity();
-			}
+			log.debug("identity");
+			final boolean is = isActive() //
+					&& processIdentity();
 		}
 	};
 
@@ -84,10 +91,9 @@ public class ConfigManagerProvider implements ConfigManager {
 	private final Runnable jobRestart = new Runnable() {
 		@Override
 		public void run() {
-			log.debug("### restart ###");
-			if (isActive()) {
-				processRestart();
-			}
+			log.debug("restart");
+			final boolean is = isActive() //
+					&& processRestart();
 		}
 	};
 
@@ -95,50 +101,77 @@ public class ConfigManagerProvider implements ConfigManager {
 	private final Runnable jobVersion = new Runnable() {
 		@Override
 		public void run() {
-			log.debug("### version ###");
-			if (isActive()) {
-				processUpdate();
-				processCalendar();
-			}
+			log.debug("version");
+			final boolean is = isActive() //
+					&& processUpdate() //
+					&& processLink() //
+					&& processCalendar(false);
 		}
 	};
 
-	/** initial configuration download */
-	private void processActivate() {
+	/** initial configuration download, if available */
+	private boolean processActivate() {
 
-		configService.updateIdentity();
-		configService.updateVersion();
-		configService.updateMaster();
+		return true //
+				&& configService.updateIdentity() //
+				&& configService.updateVersion() //
+				&& configService.updateMaster();
 
 	}
 
 	/** re-discover instance identity */
-	private void processIdentity() {
+	private boolean processIdentity() {
 
-		configService.updateIdentity();
+		return configService.updateIdentity();
 
 	}
 
 	/** re-schedule all config jobs */
-	private void processCalendar() {
+	private boolean processCalendar(final boolean isDefault) {
 
-		final String calendarKey = "carrot.config.calendar";
+		final Config config;
 
 		final Config reference = ConfigFactory.defaultReference(loader());
 
-		final Config config = configService.getVersionConfig()
-				.withFallback(reference).getConfig(calendarKey);
+		if (isDefault) {
+
+			/** use default reference calendar */
+
+			config = reference.getConfig(PATH_CALENDAR);
+
+		} else {
+
+			/** use provided instance calendar */
+
+			if (!configService.isVersionValid()) {
+				log.error("", new IllegalStateException(
+						"version must be valid to schedule instance calendar"));
+				return false;
+			}
+
+			config = configService.getVersionConfig().withFallback(reference)
+					.getConfig(PATH_CALENDAR);
+
+		}
 
 		log.debug("calendar : {}", config);
 
-		schedule(config.getConfig("identity"), JOB_IDENTITY, jobIdentity);
-		schedule(config.getConfig("restart"), JOB_RESTART, jobRestart);
-		schedule(config.getConfig("version"), JOB_VERSION, jobVersion);
+		schedule(config.getConfig(KEY_IDENTITY), JOB_IDENTITY, jobIdentity);
+		schedule(config.getConfig(KEY_RESTART), JOB_RESTART, jobRestart);
+		schedule(config.getConfig(KEY_VERSION), JOB_VERSION, jobVersion);
+
+		return true;
 
 	}
 
 	/** ensure config repo and work dir link */
-	private void processLink() {
+	private boolean processLink() {
+
+		if (!configService.isMasterValid()) {
+			log.error("", new IllegalStateException(
+					"master must be valid in order to process link"));
+			return false;
+		}
 
 		/** ${karaf.base}/conf/ */
 		final File link = new File("./conf");
@@ -158,12 +191,18 @@ public class ConfigManagerProvider implements ConfigManager {
 			log.error("link failure", new Exception());
 		}
 
+		return isLinked;
+
 	}
 
 	/** update version; if changed - update master */
-	private void processUpdate() {
+	private boolean processUpdate() {
 
-		final String versionKey = "carrot.config.version";
+		if (!configService.isIdentityValid()) {
+			log.error("", new IllegalStateException(
+					"identity must be valid in order to process update"));
+			return false;
+		}
 
 		/** before update */
 		final Config one = configService.getVersionConfig();
@@ -173,13 +212,13 @@ public class ConfigManagerProvider implements ConfigManager {
 		/** after update */
 		final Config two = configService.getVersionConfig();
 
-		final boolean hasOne = one.hasPath(versionKey);
-		final boolean hasTwo = two.hasPath(versionKey);
+		final boolean hasOne = one.hasPath(PATH_VERSION);
+		final boolean hasTwo = two.hasPath(PATH_VERSION);
 
 		if (hasOne && hasTwo) {
 
-			final String versionOne = one.getString(versionKey);
-			final String versionTwo = two.getString(versionKey);
+			final String versionOne = one.getString(PATH_VERSION);
+			final String versionTwo = two.getString(PATH_VERSION);
 
 			/** either version change or we are pulling master */
 			final boolean shouldUpdate = !versionOne.equals(versionTwo)
@@ -190,23 +229,30 @@ public class ConfigManagerProvider implements ConfigManager {
 				configService.updateMaster();
 			} else {
 				log.debug("no version change");
-				return;
 			}
+
+			return true;
 
 		} else {
 
-			log.error("version invalid; {} / {}", one, two);
+			log.error("version invalid; \n\t one: {} \n\t two: {}", one, two);
+			log.error("", new IllegalStateException(
+					"versions must be valid in both old and new configuration"));
+
+			return false;
 
 		}
 
 	}
 
 	/** TODO restart karaf and/or jvm */
-	private void processRestart() {
+	private boolean processRestart() {
 		try {
 			// system.reboot();
+			return true;
 		} catch (final Exception e) {
 			log.error("reboot failure", e);
+			return false;
 		}
 	}
 
@@ -217,6 +263,7 @@ public class ConfigManagerProvider implements ConfigManager {
 			final Runnable jobTask //
 	) {
 
+		/** TODO */
 		final String zone = config.getString("zone");
 
 		/** one time "instant" job */
@@ -233,8 +280,9 @@ public class ConfigManagerProvider implements ConfigManager {
 
 			if (currentDate.before(instantDate)) {
 				try {
-					final String name = jobName + "/" + instant;
-					scheduler.fireJobAt(name, jobTask, null, instantDate);
+					final String subName = jobName + "/instant";
+					scheduler.removeJob(subName);
+					scheduler.fireJobAt(subName, jobTask, null, instantDate);
 				} catch (final Exception e) {
 					log.error("", e);
 				}
@@ -251,7 +299,9 @@ public class ConfigManagerProvider implements ConfigManager {
 			log.debug("schedule : {}/{}", jobName, schedule);
 
 			try {
-				scheduler.addJob(jobName, jobTask, null, schedule, true);
+				final String subName = jobName + "/schedule";
+				scheduler.removeJob(subName);
+				scheduler.addJob(subName, jobTask, null, schedule, true);
 			} catch (final Exception e) {
 				log.error("", e);
 			}

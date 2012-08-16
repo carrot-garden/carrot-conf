@@ -7,6 +7,3 @@
     http://www.opensource.org/licenses/bsd-license.php
 
 -->
-### info
-
-git-based config repo provider
