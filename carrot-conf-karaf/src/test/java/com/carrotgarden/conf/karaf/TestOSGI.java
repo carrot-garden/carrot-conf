@@ -109,12 +109,12 @@ public class TestOSGI {
 				// .artifactId("org.apache.karaf.system.core")
 				// .version("3.0.0-SNAPSHOT"),
 
-				mavenBundle().groupId("org.apache.karaf.log")
-						.artifactId("org.apache.karaf.log.core")
-						.version("3.0.0-SNAPSHOT"),
+				// mavenBundle().groupId("org.apache.karaf.log")
+				// .artifactId("org.apache.karaf.log.core")
+				// .version("3.0.0-SNAPSHOT"),
 
-				mavenBundle().groupId("org.ops4j.pax.logging")
-						.artifactId("pax-logging-api").version("1.6.9"),
+				// mavenBundle().groupId("org.ops4j.pax.logging")
+				// .artifactId("pax-logging-api").version("1.6.9"),
 
 				// mavenBundle().groupId("org.ops4j.pax.logging")
 				// .artifactId("pax-logging-service").version("1.6.9"),
