@@ -72,8 +72,14 @@ public class ConfigManagerProvider implements ConfigManager {
 			final boolean is = isActive() //
 					&& processCalendar(true) // default schedule
 					&& processActivate() //
+					&& processLink() //
 					&& processCalendar(false) // instance schedule
 			;
+			if (is) {
+				log.info("config activate success");
+			} else {
+				log.error("config activate failure", new Exception());
+			}
 		}
 	};
 
