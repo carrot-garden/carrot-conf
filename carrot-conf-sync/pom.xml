@@ -13,7 +13,7 @@
 	</parent>
 
 	<groupId>com.carrotgarden.conf</groupId>
-	<artifactId>carrot-conf-karaf</artifactId>
+	<artifactId>carrot-conf-sync</artifactId>
 	<version>1.0.0-SNAPSHOT</version>
 	<packaging>bundle</packaging>
 

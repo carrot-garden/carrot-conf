@@ -1,4 +1,4 @@
-package com.carrotgarden.conf.karaf;
+package com.carrotgarden.conf.sync;
 
 import org.ops4j.pax.logging.PaxLoggingService;
 import org.ops4j.pax.logging.spi.PaxAppender;

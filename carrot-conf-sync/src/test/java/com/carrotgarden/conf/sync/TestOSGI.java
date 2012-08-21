@@ -5,7 +5,7 @@
  *
  * http://www.opensource.org/licenses/bsd-license.php
  */
-package com.carrotgarden.conf.karaf;
+package com.carrotgarden.conf.sync;
 
 import static org.ops4j.pax.exam.CoreOptions.*;
 
@@ -27,7 +27,7 @@ import org.osgi.framework.BundleContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.carrotgarden.conf.karaf.api.ConfigManager;
+import com.carrotgarden.conf.sync.api.ConfigManager;
 
 @RunWith(JUnit4TestRunner.class)
 @ExamReactorStrategy(AllConfinedStagedReactorFactory.class)

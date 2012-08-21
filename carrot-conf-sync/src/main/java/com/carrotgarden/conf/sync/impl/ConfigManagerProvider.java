@@ -5,7 +5,7 @@
  *
  * http://www.opensource.org/licenses/bsd-license.php
  */
-package com.carrotgarden.conf.karaf.impl;
+package com.carrotgarden.conf.sync.impl;
 
 import java.io.File;
 import java.util.Date;
@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import com.carrotgarden.conf.base.api.ConfigService;
 import com.carrotgarden.conf.file.FileLink;
-import com.carrotgarden.conf.karaf.api.ConfigManager;
+import com.carrotgarden.conf.sync.api.ConfigManager;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 

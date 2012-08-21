@@ -8,5 +8,5 @@
 /**
  * 
  */
-package com.carrotgarden.conf.karaf;
+package com.carrotgarden.conf.sync;
 

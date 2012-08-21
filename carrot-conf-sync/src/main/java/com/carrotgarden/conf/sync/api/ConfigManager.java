@@ -5,7 +5,7 @@
  *
  * http://www.opensource.org/licenses/bsd-license.php
  */
-package com.carrotgarden.conf.karaf.api;
+package com.carrotgarden.conf.sync.api;
 
 /**
  * 

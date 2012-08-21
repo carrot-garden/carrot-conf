@@ -5,13 +5,15 @@
  *
  * http://www.opensource.org/licenses/bsd-license.php
  */
-package com.carrotgarden.conf.karaf.impl;
+package com.carrotgarden.conf.sync.api;
 
 
 import org.junit.After;
 import org.junit.Before;
 
-public class TestConfigManagerProvider {
+import com.carrotgarden.conf.sync.api.ConfigManager;
+
+public class TestConfigManager implements ConfigManager {
 
 	@Before
 	public void setUp() throws Exception {
