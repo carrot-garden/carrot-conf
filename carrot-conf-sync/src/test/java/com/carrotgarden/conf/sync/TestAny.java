@@ -129,10 +129,10 @@ public class TestAny {
 	}
 
 	@Inject
-	private BundleContext context;
+	protected BundleContext context;
 
 	@Inject
-	private ConfigurationAdmin configAdmin;
+	protected ConfigurationAdmin configAdmin;
 
 	@Before
 	public void testActivate() throws Exception {

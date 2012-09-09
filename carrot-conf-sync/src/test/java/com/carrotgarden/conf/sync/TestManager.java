@@ -21,7 +21,6 @@ import org.junit.runner.RunWith;
 import org.ops4j.pax.exam.Option;
 import org.ops4j.pax.exam.junit.Configuration;
 import org.ops4j.pax.exam.junit.JUnit4TestRunner;
-import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceRegistration;
 import org.osgi.service.event.Event;
 import org.osgi.service.event.EventConstants;
@@ -64,9 +63,6 @@ public class TestManager extends TestAny implements EventHandler {
 		));
 
 	}
-
-	@Inject
-	private BundleContext context;
 
 	@Inject
 	private ConfigManager configManager;
