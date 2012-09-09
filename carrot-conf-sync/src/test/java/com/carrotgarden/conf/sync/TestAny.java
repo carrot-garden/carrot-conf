@@ -173,11 +173,6 @@ public class TestAny {
 
 		props.load(propsURL.openStream());
 
-		final org.osgi.service.cm.Configuration config = configAdmin
-				.getConfiguration(PAX_PID, null);
-
-		config.update(props);
-
 		final ServiceTracker tracker = new ServiceTracker(context, PAX_SERVICE,
 				null);
 
@@ -186,6 +181,11 @@ public class TestAny {
 		final Object service = tracker.waitForService(3 * 1000);
 
 		assertNotNull(service);
+
+		final org.osgi.service.cm.Configuration config = configAdmin
+				.getConfiguration(PAX_PID, null);
+
+		config.update(props);
 
 		Thread.sleep(500);
 
