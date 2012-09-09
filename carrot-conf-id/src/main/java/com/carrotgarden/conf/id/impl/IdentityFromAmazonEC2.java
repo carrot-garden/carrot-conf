@@ -59,7 +59,7 @@ public class IdentityFromAmazonEC2 extends IdentityFromUnknown {
 
 			log.debug("amazon url lookup failure", e);
 
-			return null;
+			return INVALID_ID;
 
 		}
 

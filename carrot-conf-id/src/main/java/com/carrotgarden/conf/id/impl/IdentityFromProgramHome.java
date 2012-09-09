@@ -28,7 +28,7 @@ public class IdentityFromProgramHome extends IdentityFromUnknown {
 
 			if (progHome == null || progHome.length() == 0) {
 				log.debug("missing 'user.dir' property");
-				return null;
+				return INVALID_ID;
 			}
 
 			final String fileName = constValues.idProgramHomeFile();
@@ -37,7 +37,7 @@ public class IdentityFromProgramHome extends IdentityFromUnknown {
 
 			if (!file.exists() || !file.isFile() || !file.canRead()) {
 				log.debug("missing 'user.dir' config file : {}", fileName);
-				return null;
+				return INVALID_ID;
 			}
 
 			final Config conf = ConfigFactory.parseFile(file);
@@ -48,7 +48,7 @@ public class IdentityFromProgramHome extends IdentityFromUnknown {
 
 			log.debug("'user.dir' config file lookup failure", e);
 
-			return null;
+			return INVALID_ID;
 
 		}
 

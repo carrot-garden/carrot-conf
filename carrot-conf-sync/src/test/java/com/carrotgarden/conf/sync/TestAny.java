@@ -30,7 +30,7 @@ public class TestAny {
 
 	protected final Logger log = LoggerFactory.getLogger(getClass());
 
-	private static final String PAX_LEVEL = "ERROR";
+	private static final String PAX_LEVEL = "DEBUG";
 
 	@Configuration
 	public Option[] config() {

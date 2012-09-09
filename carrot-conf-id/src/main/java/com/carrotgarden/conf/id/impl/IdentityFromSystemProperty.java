@@ -23,6 +23,7 @@ public class IdentityFromSystemProperty extends IdentityFromUnknown {
 		if (value == null || value.length() == 0) {
 			log.debug("system property not found : {}",
 					constValues.idSystemProperty());
+			return INVALID_ID;
 		}
 
 		return value;

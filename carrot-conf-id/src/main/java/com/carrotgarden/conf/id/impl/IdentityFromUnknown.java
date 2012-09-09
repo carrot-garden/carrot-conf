@@ -38,7 +38,7 @@ public class IdentityFromUnknown implements Identity {
 		if (isValid()) {
 			return getValue();
 		} else {
-			return "";
+			return INVALID_ID;
 		}
 	}
 
@@ -50,6 +50,20 @@ public class IdentityFromUnknown implements Identity {
 	@Override
 	public String toString() {
 		return getId();
+	}
+
+	@Override
+	public boolean equals(final Object other) {
+		if (other instanceof Identity) {
+			final Identity that = (Identity) other;
+			return this.getId().equals(that.getId());
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return getId().hashCode();
 	}
 
 }

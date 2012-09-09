@@ -28,7 +28,7 @@ public class IdentityFromUserHome extends IdentityFromUnknown {
 
 			if (userHome == null || userHome.length() == 0) {
 				log.debug("missing 'user.home'");
-				return null;
+				return INVALID_ID;
 			}
 
 			final String fileName = constValues.idUserHomeFile();
@@ -37,7 +37,7 @@ public class IdentityFromUserHome extends IdentityFromUnknown {
 
 			if (!file.exists() || !file.isFile() || !file.canRead()) {
 				log.debug("missing 'user.home' config file : {}", fileName);
-				return null;
+				return INVALID_ID;
 			}
 
 			final Config conf = ConfigFactory.parseFile(file);
@@ -48,7 +48,7 @@ public class IdentityFromUserHome extends IdentityFromUnknown {
 
 			log.debug("'user.home' config file lookup failure", e);
 
-			return null;
+			return INVALID_ID;
 
 		}
 

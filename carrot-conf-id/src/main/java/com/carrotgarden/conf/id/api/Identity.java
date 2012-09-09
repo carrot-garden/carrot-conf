@@ -27,4 +27,11 @@ public interface Identity {
 
 	Source getSource();
 
+	/** based on {@link #getId()} */
+	@Override
+	boolean equals(final Object other);
+
+	/** {@link #getId()} for invalid identity */
+	String INVALID_ID = "";
+
 }

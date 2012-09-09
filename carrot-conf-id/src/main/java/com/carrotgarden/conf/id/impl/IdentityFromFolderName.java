@@ -26,7 +26,7 @@ public class IdentityFromFolderName extends IdentityFromUnknown {
 
 			if (progHome == null || progHome.length() == 0) {
 				log.debug("missing 'user.dir' property");
-				return null;
+				return INVALID_ID;
 			}
 
 			final File file = new File(progHome);
@@ -37,7 +37,7 @@ public class IdentityFromFolderName extends IdentityFromUnknown {
 
 			if (parent == null) {
 				log.debug("parent folder not found; suffix : {}", suffix);
-				return null;
+				return INVALID_ID;
 			}
 
 			return parent.getName();
@@ -46,7 +46,7 @@ public class IdentityFromFolderName extends IdentityFromUnknown {
 
 			log.debug("'user.dir' parent folder lookup failure", e);
 
-			return null;
+			return INVALID_ID;
 
 		}
 

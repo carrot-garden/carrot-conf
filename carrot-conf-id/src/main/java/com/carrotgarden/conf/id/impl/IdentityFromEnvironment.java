@@ -23,6 +23,7 @@ public class IdentityFromEnvironment extends IdentityFromUnknown {
 		if (value == null || value.length() == 0) {
 			log.debug("environment variable not found : {}",
 					constValues.idEnvironmentVariable());
+			return INVALID_ID;
 		}
 
 		return value;
