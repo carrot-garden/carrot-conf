@@ -17,6 +17,7 @@ import java.net.URL;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.carrotgarden.conf.id.api.Constant;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
@@ -159,11 +160,28 @@ public class Util {
 
 	}
 
+	/** use classloder for osgi case */
 	public static Config reference() {
 
 		final ClassLoader loader = Util.class.getClassLoader();
 
 		return ConfigFactory.defaultReference(loader);
+
+	}
+
+	/** iterate upwards file system */
+	public static File findFolderWithSuffix(final File folder,
+			final String suffix) {
+
+		if (folder == null || suffix == null) {
+			return null;
+		}
+
+		if (folder.getAbsolutePath().endsWith(suffix)) {
+			return folder;
+		}
+
+		return findFolderWithSuffix(folder.getParentFile(), suffix);
 
 	}
 

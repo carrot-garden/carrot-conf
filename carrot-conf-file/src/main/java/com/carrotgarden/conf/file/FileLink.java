@@ -34,7 +34,7 @@ public class FileLink {
 
 		} catch (final Exception e) {
 
-			log.error("", e);
+			log.error("make link failure", e);
 
 			return false;
 

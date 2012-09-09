@@ -40,7 +40,7 @@ public class TestConfigService {
 
 		final Identity identity = service.getCurrentIdentity();
 
-		assertTrue(identity.isAvailable());
+		assertTrue(identity.isValid());
 
 		assertEquals(identity.getId(), "karaf.company.com");
 

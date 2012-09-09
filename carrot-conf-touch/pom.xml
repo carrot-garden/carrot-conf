@@ -1,0 +1,117 @@
+<!--
+
+    Copyright (C) 2010-2012 Andrei Pozolotin <Andrei.Pozolotin@gmail.com>
+
+    All rights reserved. Licensed under the OSI BSD License.
+
+    http://www.opensource.org/licenses/bsd-license.php
+
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.carrotgarden.base</groupId>
+		<artifactId>carrot-archon</artifactId>
+		<version>1.4.2</version>
+		<relativePath />
+	</parent>
+
+	<groupId>com.carrotgarden.conf</groupId>
+	<artifactId>carrot-conf-touch</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+	<packaging>bundle</packaging>
+
+	<scm>
+		<url>https://github.com/carrot-gardent/carrot-conf</url>
+		<connection>scm:git:git://github.com/carrot-gardent/carrot-conf.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com/carrot-gardent/carrot-conf.git</developerConnection>
+		<tag>HEAD</tag>
+	</scm>
+
+	<properties>
+
+	</properties>
+
+	<dependencies>
+
+		<!-- MAIN -->
+
+		<!-- config admin service -->
+		<dependency>
+			<groupId>com.carrotgarden.osgi</groupId>
+			<artifactId>carrot-osgi-scr-conf</artifactId>
+			<version>1.1.0</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- event admin service -->
+		<dependency>
+			<groupId>com.carrotgarden.osgi</groupId>
+			<artifactId>carrot-osgi-scr-event</artifactId>
+			<version>1.1.1</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- conf event definitions -->
+		<dependency>
+			<groupId>com.carrotgarden.conf</groupId>
+			<artifactId>carrot-conf-event</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- conf sync api -->
+		<dependency>
+			<groupId>com.carrotgarden.conf</groupId>
+			<artifactId>carrot-conf-sync</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- scr annotations -->
+		<dependency>
+			<groupId>com.carrotgarden.osgi</groupId>
+			<artifactId>carrot-osgi-anno-scr-core</artifactId>
+			<version>1.1.3</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- configuration api -->
+		<dependency>
+			<groupId>com.typesafe</groupId>
+			<artifactId>config</artifactId>
+			<version>0.5.0</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- logging -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- osgi spec -->
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.core</artifactId>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.osgi</groupId>
+			<artifactId>org.osgi.compendium</artifactId>
+			<scope>provided</scope>
+		</dependency>
+
+		<!-- TEST -->
+
+	</dependencies>
+
+</project>

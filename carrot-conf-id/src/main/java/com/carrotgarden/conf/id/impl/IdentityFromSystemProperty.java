@@ -7,6 +7,8 @@
  */
 package com.carrotgarden.conf.id.impl;
 
+import com.carrotgarden.conf.id.api.Constant;
+
 public class IdentityFromSystemProperty extends IdentityFromUnknown {
 
 	protected IdentityFromSystemProperty(final Constant constValues) {

@@ -9,6 +9,7 @@ package com.carrotgarden.conf.id.impl;
 
 import java.io.File;
 
+import com.carrotgarden.conf.id.api.Constant;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
@@ -55,7 +56,7 @@ public class IdentityFromProgramHome extends IdentityFromUnknown {
 
 	@Override
 	public Source getSource() {
-		return Source.PROGRAM_HOME;
+		return Source.PROGRAM_HOME_FILE;
 	}
 
 }

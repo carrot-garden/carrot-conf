@@ -17,6 +17,7 @@ import org.testng.annotations.Test;
 
 import util.JDK;
 
+import com.carrotgarden.conf.id.api.Constant;
 import com.carrotgarden.conf.id.api.Identity;
 
 public class TestIdentityFromEnvironment {
@@ -40,7 +41,7 @@ public class TestIdentityFromEnvironment {
 		JDK.setEnv(propName, null);
 
 		final Identity id0 = new IdentityFromEnvironment(constValues);
-		assertFalse(id0.isAvailable());
+		assertFalse(id0.isValid());
 		assertEquals(id0.getId(), "");
 
 		//
@@ -50,7 +51,7 @@ public class TestIdentityFromEnvironment {
 		JDK.setEnv(propName, value);
 
 		final Identity id1 = new IdentityFromEnvironment(constValues);
-		assertTrue(id1.isAvailable());
+		assertTrue(id1.isValid());
 		assertEquals(id1.getId(), value);
 
 		//

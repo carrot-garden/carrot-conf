@@ -10,6 +10,7 @@ package com.carrotgarden.conf.id.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.carrotgarden.conf.id.api.Constant;
 import com.carrotgarden.conf.id.api.Identity;
 
 public class IdentityFromUnknown implements Identity {
@@ -27,14 +28,14 @@ public class IdentityFromUnknown implements Identity {
 	}
 
 	@Override
-	public boolean isAvailable() {
+	public boolean isValid() {
 		final String id = getValue();
 		return id != null && id.length() != 0;
 	}
 
 	@Override
 	public String getId() {
-		if (isAvailable()) {
+		if (isValid()) {
 			return getValue();
 		} else {
 			return "";

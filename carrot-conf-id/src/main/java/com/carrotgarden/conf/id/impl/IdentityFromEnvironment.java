@@ -7,6 +7,8 @@
  */
 package com.carrotgarden.conf.id.impl;
 
+import com.carrotgarden.conf.id.api.Constant;
+
 public class IdentityFromEnvironment extends IdentityFromUnknown {
 
 	protected IdentityFromEnvironment(final Constant constValues) {

@@ -14,14 +14,14 @@ public interface Identity {
 	enum Source {
 		ENVIRONMENT_VARIABLE(), //
 		SYSTEM_PROPERTY(), //
-		PROGRAM_HOME(), //
-		USER_HOME(), //
+		PARENT_FOLDER_NAME, //
+		PROGRAM_HOME_FILE(), //
+		USER_HOME_FILE(), //
 		AMAZON_URL_EC2(), //
 		UNKNONW(), // default
-
 	}
 
-	boolean isAvailable();
+	boolean isValid();
 
 	String getId();
 

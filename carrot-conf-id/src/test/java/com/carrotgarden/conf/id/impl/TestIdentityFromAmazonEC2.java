@@ -28,6 +28,7 @@ import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
+import com.carrotgarden.conf.id.api.Constant;
 import com.carrotgarden.conf.id.api.Identity;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -138,7 +139,7 @@ public class TestIdentityFromAmazonEC2 {
 
 		final Identity id0 = new IdentityFromAmazonEC2(constValues);
 
-		assertTrue(id0.isAvailable());
+		assertTrue(id0.isValid());
 		assertEquals(id0.getId(), value);
 
 		log.debug("#########################");

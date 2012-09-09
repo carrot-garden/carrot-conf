@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
+import com.carrotgarden.conf.id.api.Constant;
 import com.carrotgarden.conf.id.api.Identity;
 
 public class TestIdentityFromUserHome {
@@ -56,7 +57,7 @@ public class TestIdentityFromUserHome {
 		//
 
 		final Identity id0 = new IdentityFromUserHome(constValues);
-		assertFalse(id0.isAvailable());
+		assertFalse(id0.isValid());
 		assertEquals(id0.getId(), "");
 
 		//
@@ -73,7 +74,7 @@ public class TestIdentityFromUserHome {
 		//
 
 		final Identity id1 = new IdentityFromUserHome(constValues);
-		assertTrue(id1.isAvailable());
+		assertTrue(id1.isValid());
 		assertEquals(id1.getId(), value);
 
 		//

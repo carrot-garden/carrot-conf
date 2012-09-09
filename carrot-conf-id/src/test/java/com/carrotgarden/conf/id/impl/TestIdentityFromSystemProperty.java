@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.Test;
 
+import com.carrotgarden.conf.id.api.Constant;
 import com.carrotgarden.conf.id.api.Identity;
 
 public class TestIdentityFromSystemProperty {
@@ -38,7 +39,7 @@ public class TestIdentityFromSystemProperty {
 		System.setProperty(propName, "");
 
 		final Identity id0 = new IdentityFromSystemProperty(constValues);
-		assertFalse(id0.isAvailable());
+		assertFalse(id0.isValid());
 		assertEquals(id0.getId(), "");
 
 		//
@@ -48,7 +49,7 @@ public class TestIdentityFromSystemProperty {
 		System.setProperty(propName, value);
 
 		final Identity id1 = new IdentityFromSystemProperty(constValues);
-		assertTrue(id1.isAvailable());
+		assertTrue(id1.isValid());
 		assertEquals(id1.getId(), value);
 
 		//

@@ -13,9 +13,10 @@ import org.osgi.service.component.annotations.Deactivate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.carrotgarden.conf.id.api.Constant;
 import com.carrotgarden.conf.id.api.Identity;
-import com.carrotgarden.conf.id.api.IdentityService;
 import com.carrotgarden.conf.id.api.Identity.Source;
+import com.carrotgarden.conf.id.api.IdentityService;
 
 @Component
 public class IdentityServiceProvider implements IdentityService {
@@ -31,43 +32,65 @@ public class IdentityServiceProvider implements IdentityService {
 		return constValues;
 	}
 
+	/** default */
+	private final Identity INVALID = new IdentityFromUnknown(constValues());
+
+	/** previous identity, if any */
+	private Identity previousIdentity = INVALID;
+
 	@Override
 	public Identity getCurrentIdentity() {
 
 		final Constant constValues = constValues();
 
-		for (final Source source : Source.values()) {
+		Identity currentIdentity = INVALID;
 
-			final Identity identity;
+		/** iterate in Source declaration order */
+		for (final Source source : Source.values()) {
 
 			switch (source) {
 			case ENVIRONMENT_VARIABLE:
-				identity = new IdentityFromEnvironment(constValues);
+				currentIdentity = new IdentityFromEnvironment(constValues);
 				break;
 			case SYSTEM_PROPERTY:
-				identity = new IdentityFromSystemProperty(constValues);
+				currentIdentity = new IdentityFromSystemProperty(constValues);
 				break;
-			case PROGRAM_HOME:
-				identity = new IdentityFromProgramHome(constValues);
+			case PARENT_FOLDER_NAME:
+				currentIdentity = new IdentityFromFolderName(constValues);
 				break;
-			case USER_HOME:
-				identity = new IdentityFromUserHome(constValues);
+			case PROGRAM_HOME_FILE:
+				currentIdentity = new IdentityFromProgramHome(constValues);
+				break;
+			case USER_HOME_FILE:
+				currentIdentity = new IdentityFromUserHome(constValues);
 				break;
 			case AMAZON_URL_EC2:
-				identity = new IdentityFromAmazonEC2(constValues);
+				currentIdentity = new IdentityFromAmazonEC2(constValues);
 				break;
 			default:
-				identity = new IdentityFromUnknown(constValues);
+				currentIdentity = new IdentityFromUnknown(constValues);
 				break;
 			}
 
-			if (identity.isAvailable()) {
-				return identity;
+			if (currentIdentity.isValid()) {
+				break;
 			}
 
 		}
 
-		return new IdentityFromUnknown(constValues);
+		if (!previousIdentity.equals(currentIdentity)) {
+
+			log.info("identity change; \n\t old : {} \n\t new : {}",
+					previousIdentity, currentIdentity);
+
+			previousIdentity = currentIdentity;
+
+		}
+
+		System.setProperty(constValues.activeIdentity(),
+				currentIdentity.getId());
+
+		return currentIdentity;
 
 	}
 

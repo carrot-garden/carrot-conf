@@ -13,6 +13,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import com.carrotgarden.conf.id.api.Constant;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 

@@ -7,13 +7,10 @@
  */
 package com.carrotgarden.conf.sync.api;
 
-
 import org.junit.After;
 import org.junit.Before;
 
-import com.carrotgarden.conf.sync.api.ConfigManager;
-
-public class TestConfigManager implements ConfigManager {
+public class TestConfigManager {
 
 	@Before
 	public void setUp() throws Exception {

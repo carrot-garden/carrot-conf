@@ -7,13 +7,17 @@
  */
 package com.carrotgarden.conf.sync.impl;
 
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 
 public class Util {
 
 	/**
-	 * form 2012-01-15T12:15:30Z
+	 * form "2012-01-15T12:15:30Z"
 	 */
 	public static Date parseISO(final String text) {
 
@@ -30,6 +34,25 @@ public class Util {
 
 		}
 
+	}
+
+	public static <T> T[] concat(final T[] one, final T[] two) {
+
+		final T[] result = Arrays.copyOf(one, one.length + two.length);
+
+		System.arraycopy(two, 0, result, one.length, two.length);
+
+		return result;
+
+	}
+
+	/** bundle class loader */
+	public static ClassLoader loader() {
+		return Util.class.getClassLoader();
+	}
+
+	public static Config reference() {
+		return ConfigFactory.defaultReference(loader());
 	}
 
 }

@@ -18,11 +18,13 @@ import org.osgi.service.component.annotations.Reference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.carrotgarden.conf.base.api.ConfigService;
+import com.carrotgarden.conf.event.ConfigEvent;
 import com.carrotgarden.conf.file.FileLink;
+import com.carrotgarden.conf.id.api.Identity;
+import com.carrotgarden.conf.repo.api.ConfigService;
 import com.carrotgarden.conf.sync.api.ConfigManager;
+import com.carrotgarden.osgi.event.api.EventAdminService;
 import com.typesafe.config.Config;
-import com.typesafe.config.ConfigFactory;
 
 /**
  * 
@@ -40,28 +42,33 @@ public class ConfigManagerProvider implements ConfigManager {
 	private final static String KEY_RESTART = "restart";
 	private final static String KEY_VERSION = "version";
 
-	/** bundle class loader */
-	private static ClassLoader loader() {
-		return ConfigManagerProvider.class.getClassLoader();
-	}
+	private final static String KEY_INSTANT = "instant";
+	private final static String KEY_SCHEDULE = "schedule";
 
 	/** job name convention */
 	private static String name(final String name) {
 		return ConfigManagerProvider.class.getName() + "/" + name;
 	}
 
-	/** unique job names */
+	/** job sub name convention */
+	private static String name(final String name, final String subName) {
+		return name + "-" + subName;
+	}
+
+	/** unique job root names */
 	private static final String JOB_ACTIVATE = name("activate");
 	private static final String JOB_IDENTITY = name(KEY_IDENTITY);
 	private static final String JOB_RESTART = name(KEY_RESTART);
 	private static final String JOB_VERSION = name(KEY_VERSION);
+
+	private boolean isActive;
 
 	/**
 	 * guard against job invocation that can happen after component is
 	 * deactivated
 	 */
 	private boolean isActive() {
-		return configService != null && scheduler != null;
+		return isActive;
 	}
 
 	/** runs once on component activation */
@@ -69,14 +76,15 @@ public class ConfigManagerProvider implements ConfigManager {
 		@Override
 		public void run() {
 			log.debug("activate");
-			final boolean is = isActive() //
+			final boolean isSuccess = isActive() //
 					&& processCalendar(true) // default schedule
 					&& processActivate() //
 					&& processLink() //
 					&& processCalendar(false) // instance schedule
 			;
-			if (is) {
+			if (isSuccess) {
 				log.info("config activate success");
+				eventer.post(ConfigEvent.CONFIG_CHANGE);
 			} else {
 				log.error("config activate failure", new Exception());
 			}
@@ -88,8 +96,14 @@ public class ConfigManagerProvider implements ConfigManager {
 		@Override
 		public void run() {
 			log.debug("identity");
-			final boolean is = isActive() //
-					&& processIdentity();
+			final boolean isSuccess = isActive() //
+					&& processIdentity() //
+			;
+			if (isSuccess) {
+				eventer.post(ConfigEvent.JOB_INDENTITY_SUCCESS);
+			} else {
+				eventer.post(ConfigEvent.JOB_INDENTITY_FAILURE);
+			}
 		}
 	};
 
@@ -98,8 +112,14 @@ public class ConfigManagerProvider implements ConfigManager {
 		@Override
 		public void run() {
 			log.debug("restart");
-			final boolean is = isActive() //
-					&& processRestart();
+			final boolean isSuccess = isActive() //
+					&& processRestart() //
+			;
+			if (isSuccess) {
+				eventer.post(ConfigEvent.JOB_RESTART_SUCCESS);
+			} else {
+				eventer.post(ConfigEvent.JOB_RESTART_FAILURE);
+			}
 		}
 	};
 
@@ -108,10 +128,15 @@ public class ConfigManagerProvider implements ConfigManager {
 		@Override
 		public void run() {
 			log.debug("version");
-			final boolean is = isActive() //
+			final boolean isSuccess = isActive() //
 					&& processUpdate() //
 					&& processLink() //
-					&& processCalendar(false);
+					&& processCalendar(false); // instance calendar
+			if (isSuccess) {
+				eventer.post(ConfigEvent.JOB_VERSION_SUCCESS);
+			} else {
+				eventer.post(ConfigEvent.JOB_VERSION_FAILURE);
+			}
 		}
 	};
 
@@ -121,7 +146,8 @@ public class ConfigManagerProvider implements ConfigManager {
 		return true //
 				&& configService.updateIdentity() //
 				&& configService.updateVersion() //
-				&& configService.updateMaster();
+				&& configService.updateMaster() //
+		;
 
 	}
 
@@ -137,7 +163,7 @@ public class ConfigManagerProvider implements ConfigManager {
 
 		final Config config;
 
-		final Config reference = ConfigFactory.defaultReference(loader());
+		final Config reference = Util.reference();
 
 		if (isDefault) {
 
@@ -213,7 +239,10 @@ public class ConfigManagerProvider implements ConfigManager {
 		/** before update */
 		final Config one = configService.getVersionConfig();
 
-		configService.updateVersion();
+		if (!configService.updateVersion()) {
+			log.error("", new Exception("version update failure"));
+			return false;
+		}
 
 		/** after update */
 		final Config two = configService.getVersionConfig();
@@ -231,8 +260,14 @@ public class ConfigManagerProvider implements ConfigManager {
 					|| versionTwo.equals("master");
 
 			if (shouldUpdate) {
-				log.info("master change : {} -> {}", versionOne, versionTwo);
-				configService.updateMaster();
+				if (configService.updateMaster()) {
+					log.info("master change succress: {} -> {}", //
+							versionOne, versionTwo);
+					eventer.post(ConfigEvent.CONFIG_CHANGE);
+				} else {
+					log.error("master change failure: {} -> {}", //
+							versionOne, versionTwo);
+				}
 			} else {
 				log.debug("no version change");
 			}
@@ -274,7 +309,7 @@ public class ConfigManagerProvider implements ConfigManager {
 
 		/** one time "instant" job */
 		{
-			final String instant = config.getString("instant");
+			final String instant = config.getString(KEY_INSTANT);
 
 			log.debug("instant : {}/{}", jobName, instant);
 
@@ -286,11 +321,11 @@ public class ConfigManagerProvider implements ConfigManager {
 
 			if (currentDate.before(instantDate)) {
 				try {
-					final String subName = jobName + "/instant";
+					final String subName = name(jobName, KEY_INSTANT);
 					scheduler.removeJob(subName);
 					scheduler.fireJobAt(subName, jobTask, null, instantDate);
 				} catch (final Exception e) {
-					log.error("", e);
+					log.error("schedule failure", e);
 				}
 			}
 		}
@@ -300,16 +335,16 @@ public class ConfigManagerProvider implements ConfigManager {
 			// final String schedule = "0 0 0 * * ?";//
 			// config.getString("schedule");
 
-			final String schedule = config.getString("schedule");
+			final String schedule = config.getString(KEY_SCHEDULE);
 
 			log.debug("schedule : {}/{}", jobName, schedule);
 
 			try {
-				final String subName = jobName + "/schedule";
+				final String subName = name(jobName, KEY_SCHEDULE);
 				scheduler.removeJob(subName);
 				scheduler.addJob(subName, jobTask, null, schedule, true);
 			} catch (final Exception e) {
-				log.error("", e);
+				log.error("schedule failure", e);
 			}
 
 		}
@@ -324,20 +359,38 @@ public class ConfigManagerProvider implements ConfigManager {
 		try {
 			scheduler.fireJob(jobActivate, null);
 		} catch (final Exception e) {
-			log.error("", e);
+			log.error("schedule failure", e);
 		}
+
+		isActive = true;
 
 	}
 
 	@Deactivate
 	protected void deactivate() {
 
+		isActive = false;
+
 		log.debug("deactivate");
 
-		scheduler.removeJob(JOB_ACTIVATE);
-		scheduler.removeJob(JOB_IDENTITY);
-		scheduler.removeJob(JOB_VERSION);
-		scheduler.removeJob(JOB_RESTART);
+		try {
+
+			scheduler.removeJob(JOB_ACTIVATE);
+
+			unschedule(JOB_IDENTITY);
+			unschedule(JOB_VERSION);
+			unschedule(JOB_RESTART);
+
+		} catch (final Exception e) {
+			log.error("unschedule failure", e);
+		}
+
+	}
+
+	private void unschedule(final String jobName) {
+
+		scheduler.removeJob(name(jobName, KEY_INSTANT));
+		scheduler.removeJob(name(jobName, KEY_SCHEDULE));
 
 	}
 
@@ -356,6 +409,18 @@ public class ConfigManagerProvider implements ConfigManager {
 
 	//
 
+	private EventAdminService eventer;
+
+	@Reference
+	protected void bind(final EventAdminService s) {
+		eventer = s;
+	}
+
+	protected void unbind(final EventAdminService s) {
+		eventer = null;
+	}
+
+	//
 	private Scheduler scheduler;
 
 	@Reference
@@ -365,6 +430,28 @@ public class ConfigManagerProvider implements ConfigManager {
 
 	protected void unbind(final Scheduler s) {
 		scheduler = null;
+	}
+
+	//
+
+	@Override
+	public boolean isIdentityValid() {
+		return configService.isIdentityValid();
+	}
+
+	@Override
+	public Identity getIdentity() {
+		return configService.getIdentity();
+	}
+
+	@Override
+	public boolean isConfigValid() {
+		return configService.isMasterValid();
+	}
+
+	@Override
+	public Config getConfig() {
+		return configService.getMasterConfig();
 	}
 
 	//

@@ -7,9 +7,30 @@
  */
 package com.carrotgarden.conf.sync.api;
 
+import com.carrotgarden.conf.id.api.Identity;
+import com.typesafe.config.Config;
+
 /**
  * 
  */
 public interface ConfigManager {
+
+	/**
+	 * @return is current identity valid
+	 */
+	boolean isIdentityValid();
+
+	/** @return current identity; can be invalid */
+	Identity getIdentity();
+
+	/**
+	 * @return is current master valid
+	 */
+	boolean isConfigValid();
+
+	/**
+	 * @return current application.conf; can be invalid
+	 */
+	Config getConfig();
 
 }

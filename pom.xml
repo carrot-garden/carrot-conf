@@ -23,7 +23,19 @@
 
 	<groupId>com.carrotgarden.conf</groupId>
 	<artifactId>carrot-conf</artifactId>
-	<version>1.0.0-SNAPSHOT</version>
+	<version>0.0.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
+
+	<modules>
+		<module>carrot-conf-diff</module>
+		<module>carrot-conf-entry</module>
+		<module>carrot-conf-file</module>
+		<module>carrot-conf-id</module>
+		<module>carrot-conf-list</module>
+		<module>carrot-conf-repo</module>
+		<module>carrot-conf-sync</module>
+		<module>carrot-conf-touch</module>
+		<module>carrot-conf-util</module>
+	</modules>
 
 </project>
