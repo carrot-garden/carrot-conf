@@ -53,13 +53,15 @@ public class TestManager extends TestAny implements EventHandler {
 
 		return Util.concat(
 
-				super.config(),
+		super.config(),
 
-				options(systemProperty("carrot.config.identity").value(id),
-						systemProperty("carrot.config.repository.local").value(
-								local)
+		options(
 
-				));
+		systemProperty("carrot.config.identity").value(id),
+
+		systemProperty("carrot.config.repository.local").value(local)
+
+		));
 
 	}
 
@@ -79,10 +81,10 @@ public class TestManager extends TestAny implements EventHandler {
 		final ServiceRegistration reg = context.registerService(
 				EventHandler.class.getName(), this, props);
 
-		Thread.sleep(20 * 1000);
+		Thread.sleep(30 * 1000);
 
 		assertEquals(countConfigChange, 1);
-		assertTrue(countVersionSuccess >= 3);
+		assertTrue(countVersionSuccess >= 2);
 		assertEquals(countVersionFailure, 0);
 
 		assertTrue(configManager.isIdentityValid());
