@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import com.carrotgarden.conf.id.api.Constant;
 import com.carrotgarden.conf.id.api.Identity;
 import com.carrotgarden.conf.id.api.IdentityService;
+import com.carrotgarden.conf.list.ConfigListBuilder;
 import com.carrotgarden.conf.repo.api.ConfigService;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -293,7 +294,18 @@ public class ConfigServiceProvider implements ConfigService {
 
 	private Config parse(final File file, final Config defaultConfig) {
 		try {
-			return ConfigFactory.parseFile(file);
+
+			/** parse configuration */
+			final Config step1 = ConfigFactory.parseFile(file);
+
+			/** perform substitutions */
+			final Config step2 = step1.resolve();
+
+			/** apply list builder */
+			final Config step3 = ConfigListBuilder.process(step2);
+
+			return step3;
+
 		} catch (final Exception e) {
 			log.error("invalid config format", e);
 			return defaultConfig;
@@ -307,6 +319,21 @@ public class ConfigServiceProvider implements ConfigService {
 
 	protected void unbind(final IdentityService s) {
 		identityService = null;
+	}
+
+	@Override
+	public void injectMaster(File configFile) {
+
+		if (configFile == null) {
+
+			final String configName = constant().repoFileApplication();
+
+			configFile = new File(getMasterInstance(), configName);
+
+		}
+
+		masterConfig = parse(configFile, INVALID);
+
 	}
 
 }

@@ -33,4 +33,18 @@ public interface ConfigManager {
 	 */
 	Config getConfig();
 
+	//
+
+	/** config admin service pid */
+	String SERVICE_PID = "com.carrotgarden.conf.sync";
+
+	/** set to "true" to enable test mode */
+	String PROP_TEST_ENABLE = "sync.test.enable";
+
+	/** master repo poll period during testing, seconds */
+	String PROP_TEST_PERIOD = "sync.test.period";
+
+	/** alternative application.conf file */
+	String PROP_TEST_CONFIG = "sync.test.config";
+
 }

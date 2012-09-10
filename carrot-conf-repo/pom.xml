@@ -47,6 +47,13 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>com.carrotgarden.conf</groupId>
+			<artifactId>carrot-conf-list</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+
 		<!-- scr annotations -->
 		<dependency>
 			<groupId>com.carrotgarden.osgi</groupId>

@@ -82,4 +82,7 @@ public interface ConfigService {
 	 */
 	boolean updateVersion();
 
+	/** inject config for testing */
+	void injectMaster(File configFile);
+
 }

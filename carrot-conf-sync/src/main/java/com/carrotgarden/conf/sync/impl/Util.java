@@ -10,6 +10,10 @@ package com.carrotgarden.conf.sync.impl;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Map;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -53,6 +57,46 @@ public class Util {
 
 	public static Config reference() {
 		return ConfigFactory.defaultReference(loader());
+	}
+
+	@SuppressWarnings("rawtypes")
+	public static Map<String, String> wrap(final Dictionary dict) {
+
+		final Map<String, String> props = new HashMap<String, String>();
+
+		if (dict == null || dict.isEmpty()) {
+			return props;
+		}
+
+		final Enumeration<?> keyList = dict.keys();
+
+		while (keyList.hasMoreElements()) {
+
+			final Object key = keyList.nextElement();
+			final Object value = dict.get(key);
+
+			if (key instanceof String && value instanceof String) {
+				props.put(key.toString(), value.toString());
+			}
+
+		}
+
+		return props;
+
+	}
+
+	public static long parseLong(final String text, final long defaultValue) {
+
+		try {
+
+			return Long.parseLong(text);
+
+		} catch (final Exception e) {
+
+			return defaultValue;
+
+		}
+
 	}
 
 }
