@@ -62,6 +62,14 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<!-- list builder -->
+		<dependency>
+			<groupId>com.carrotgarden.conf</groupId>
+			<artifactId>carrot-conf-list</artifactId>
+			<version>1.0.0-SNAPSHOT</version>
+			<scope>provided</scope>
+		</dependency>
+
 		<!-- conf sync api -->
 		<dependency>
 			<groupId>com.carrotgarden.conf</groupId>
