@@ -87,6 +87,9 @@ public class TestAny {
 						.artifactId("carrot-conf-event").versionAsInProject(),
 
 				mavenBundle().groupId("com.carrotgarden.conf")
+						.artifactId("carrot-conf-list").versionAsInProject(),
+
+				mavenBundle().groupId("com.carrotgarden.conf")
 						.artifactId("carrot-conf-repo").versionAsInProject(),
 
 				mavenBundle().groupId("com.carrotgarden.conf")
