@@ -136,7 +136,7 @@ public class TestRepoVersionChange {
 
 	@Test
 	public void testRepoVersion1() throws Exception {
-		testRepoVersion("1.0.2", "1.1.1");
+		testRepoVersion("1.0.7", "1.1.1");
 	}
 
 	@Test

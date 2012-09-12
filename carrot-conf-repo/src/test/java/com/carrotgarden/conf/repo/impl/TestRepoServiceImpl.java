@@ -76,7 +76,7 @@ public class TestRepoServiceImpl {
 
 		final Config versionConfig = ConfigFactory.parseFile(versionFile);
 		log.info("version : \n{}", versionConfig);
-		assertEquals(versionConfig.getString("carrot.config.version"), "1.0.2");
+		assertEquals(versionConfig.getString("carrot.config.version"), "1.0.7");
 
 		//
 

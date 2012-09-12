@@ -46,7 +46,7 @@ public class ConfigServiceProvider implements ConfigService {
 
 	private Config versionConfig = INVALID;
 
-	private boolean isActive;
+	// private boolean isActive;
 
 	@Activate
 	protected void activate() {
@@ -60,10 +60,10 @@ public class ConfigServiceProvider implements ConfigService {
 
 		repo.ensureRepoAll();
 
-		isActive = true //
-				&& updateIdentity() //
-				&& updateVersion() //
-				&& updateMaster();
+		// isActive = true //
+		// && updateIdentity() //
+		// && updateVersion() //
+		// && updateMaster();
 
 	}
 

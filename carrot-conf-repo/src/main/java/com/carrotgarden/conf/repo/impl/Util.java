@@ -13,6 +13,7 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URL;
+import java.util.Arrays;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -165,6 +166,16 @@ public class Util {
 		final ClassLoader loader = Util.class.getClassLoader();
 
 		return ConfigFactory.defaultReference(loader);
+
+	}
+
+	public static <T> T[] concat(final T[] one, final T[] two) {
+
+		final T[] result = Arrays.copyOf(one, one.length + two.length);
+
+		System.arraycopy(two, 0, result, one.length, two.length);
+
+		return result;
 
 	}
 
